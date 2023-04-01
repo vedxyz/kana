@@ -7,12 +7,17 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "lint": "eslint ./src && tsc --noEmit",
+    "lint": "tsc --noEmit && eslint ./src",
     "lint:fix": "eslint --fix ./src",
     "prettier": "prettier --write ./src",
     "prettier:check": "prettier --check ./src"
   },
   "dependencies": {
+    "@emotion/react": "^11.10.6",
+    "@mantine/core": "^6.0.5",
+    "@mantine/hooks": "^6.0.5",
+    "@mantine/modals": "^6.0.5",
+    "@tabler/icons-react": "^2.13.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
