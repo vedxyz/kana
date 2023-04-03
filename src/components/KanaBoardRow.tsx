@@ -3,13 +3,15 @@ import React from "react";
 
 export interface KanaBoardRowProps {
   content: ({ kana: string; romaji: string | string[] } | null)[];
+  checked: boolean;
+  onChange: (checked: boolean) => void;
 }
 
-function KanaBoardRow({ content }: KanaBoardRowProps) {
+function KanaBoardRow({ content, checked, onChange }: KanaBoardRowProps) {
   return (
     <Stack sx={{ gap: 0 }}>
       <Container p={0}>
-        <Checkbox />
+        <Checkbox checked={checked} onChange={(e) => onChange(e.currentTarget.checked)} />
       </Container>
       {content.map((letter, i) => {
         const visibility = letter === null ? "hidden" : "visible";

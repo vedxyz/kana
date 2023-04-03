@@ -1,143 +1,175 @@
-import { Group } from "@mantine/core";
+import { Checkbox, Container, Group } from "@mantine/core";
 import React from "react";
-import { kana } from "../utilities/kana";
+import { KanaChars, KanaConfiguration, kanaMap, KanaNames, KanaRowNames } from "../utilities/kana";
 import KanaBoardRow from "./KanaBoardRow";
 
-const kanaMainRows = {
+const kanaRows: { [key in KanaNames]: { [key in KanaRowNames]: (KanaChars | null)[] } } = {
   hiragana: {
-    vowel: ["あ", "い", "う", "え", "お"],
-    k: ["か", "き", "く", "け", "こ"],
-    s: ["さ", "し", "す", "せ", "そ"],
-    t: ["た", "ち", "つ", "て", "と"],
-    n: ["な", "に", "ぬ", "ね", "の"],
-    h: ["は", "ひ", "ふ", "へ", "ほ"],
-    m: ["ま", "み", "む", "め", "も"],
-    y: ["や", null, "ゆ", null, "よ"],
-    r: ["ら", "り", "る", "れ", "ろ"],
-    w: ["わ", null, null, null, "を"],
-    nn: [null, null, null, null, "ん"],
-    g: ["が", "ぎ", "ぐ", "げ", "ご"],
-    z: ["ざ", "じ", "ず", "ぜ", "ぞ"],
-    d: ["だ", "ぢ", "づ", "で", "ど"],
-    b: ["ば", "び", "ぶ", "べ", "ぼ"],
-    p: ["ぱ", "ぴ", "ぷ", "ぺ", "ぽ"],
+    regular_vowel: ["あ", "い", "う", "え", "お"],
+    regular_k: ["か", "き", "く", "け", "こ"],
+    regular_s: ["さ", "し", "す", "せ", "そ"],
+    regular_t: ["た", "ち", "つ", "て", "と"],
+    regular_n: ["な", "に", "ぬ", "ね", "の"],
+    regular_h: ["は", "ひ", "ふ", "へ", "ほ"],
+    regular_m: ["ま", "み", "む", "め", "も"],
+    regular_y: ["や", null, "ゆ", null, "よ"],
+    regular_r: ["ら", "り", "る", "れ", "ろ"],
+    regular_w: ["わ", null, null, null, "を"],
+    regular_nn: [null, null, null, null, "ん"],
+
+    dakuten_g: ["が", "ぎ", "ぐ", "げ", "ご"],
+    dakuten_z: ["ざ", "じ", "ず", "ぜ", "ぞ"],
+    dakuten_d: ["だ", "ぢ", "づ", "で", "ど"],
+    dakuten_b: ["ば", "び", "ぶ", "べ", "ぼ"],
+    dakuten_p: ["ぱ", "ぴ", "ぷ", "ぺ", "ぽ"],
+
+    combination_k: ["きゃ", "きゅ", "きょ"],
+    combination_s: ["しゃ", "しゅ", "しょ"],
+    combination_c: ["ちゃ", "ちゅ", "ちょ"],
+    combination_n: ["にゃ", "にゅ", "にょ"],
+    combination_h: ["ひゃ", "ひゅ", "ひょ"],
+    combination_m: ["みゃ", "みゅ", "みょ"],
+    combination_r: ["りゃ", "りゅ", "りょ"],
+    combination_g: ["ぎゃ", "ぎゅ", "ぎょ"],
+    combination_j1: ["じゃ", "じゅ", "じょ"],
+    combination_j2: ["ぢゃ", "ぢゅ", "ぢょ"],
+    combination_b: ["びゃ", "びゅ", "びょ"],
+    combination_p: ["ぴゃ", "ぴゅ", "ぴょ"],
   },
   katakana: {
-    vowel: ["ア", "イ", "ウ", "エ", "オ"],
-    k: ["カ", "キ", "ク", "ケ", "コ"],
-    s: ["サ", "シ", "ス", "セ", "ソ"],
-    t: ["タ", "チ", "ツ", "テ", "ト"],
-    n: ["ナ", "ニ", "ヌ", "ネ", "ノ"],
-    h: ["ハ", "ヒ", "フ", "ヘ", "ホ"],
-    m: ["マ", "ミ", "ム", "メ", "モ"],
-    y: ["ヤ", null, "ユ", null, "ヨ"],
-    r: ["ラ", "リ", "ル", "レ", "ロ"],
-    w: ["ワ", null, null, null, "ヲ"],
-    nn: [null, null, null, null, "ン"],
-    g: ["ガ", "ギ", "グ", "ゲ", "ゴ"],
-    z: ["ザ", "ジ", "ズ", "ゼ", "ゾ"],
-    d: ["ダ", "ヂ", "ヅ", "デ", "ド"],
-    b: ["バ", "ビ", "ブ", "ベ", "ボ"],
-    p: ["パ", "ピ", "プ", "ペ", "ポ"],
+    regular_vowel: ["ア", "イ", "ウ", "エ", "オ"],
+    regular_k: ["カ", "キ", "ク", "ケ", "コ"],
+    regular_s: ["サ", "シ", "ス", "セ", "ソ"],
+    regular_t: ["タ", "チ", "ツ", "テ", "ト"],
+    regular_n: ["ナ", "ニ", "ヌ", "ネ", "ノ"],
+    regular_h: ["ハ", "ヒ", "フ", "ヘ", "ホ"],
+    regular_m: ["マ", "ミ", "ム", "メ", "モ"],
+    regular_y: ["ヤ", null, "ユ", null, "ヨ"],
+    regular_r: ["ラ", "リ", "ル", "レ", "ロ"],
+    regular_w: ["ワ", null, null, null, "ヲ"],
+    regular_nn: [null, null, null, null, "ン"],
+
+    dakuten_g: ["ガ", "ギ", "グ", "ゲ", "ゴ"],
+    dakuten_z: ["ザ", "ジ", "ズ", "ゼ", "ゾ"],
+    dakuten_d: ["ダ", "ヂ", "ヅ", "デ", "ド"],
+    dakuten_b: ["バ", "ビ", "ブ", "ベ", "ボ"],
+    dakuten_p: ["パ", "ピ", "プ", "ペ", "ポ"],
+
+    combination_k: ["キャ", "キュ", "キョ"],
+    combination_s: ["シャ", "シュ", "ショ"],
+    combination_c: ["チャ", "チュ", "チョ"],
+    combination_n: ["ニャ", "ニュ", "ニョ"],
+    combination_h: ["ヒャ", "ヒュ", "ヒョ"],
+    combination_m: ["ミャ", "ミュ", "ミョ"],
+    combination_r: ["リャ", "リュ", "リョ"],
+    combination_g: ["ギャ", "ギュ", "ギョ"],
+    combination_j1: ["ジャ", "ジュ", "ジョ"],
+    combination_j2: ["ヂャ", "ヂュ", "ヂョ"],
+    combination_b: ["ビャ", "ビュ", "ビョ"],
+    combination_p: ["ピャ", "ピュ", "ピョ"],
   },
 };
 
-const kanaCombinationRows = {
-  hiragana: {
-    k: ["きゃ", "きゅ", "きょ"],
-    s: ["しゃ", "しゅ", "しょ"],
-    c: ["ちゃ", "ちゅ", "ちょ"],
-    n: ["にゃ", "にゅ", "にょ"],
-    h: ["ひゃ", "ひゅ", "ひょ"],
-    m: ["みゃ", "みゅ", "みょ"],
-    r: ["りゃ", "りゅ", "りょ"],
-    g: ["ぎゃ", "ぎゅ", "ぎょ"],
-    j1: ["じゃ", "じゅ", "じょ"],
-    j2: ["ぢゃ", "ぢゅ", "ぢょ"],
-    b: ["びゃ", "びゅ", "びょ"],
-    p: ["ぴゃ", "ぴゅ", "ぴょ"],
-  },
-  katakana: {
-    k: ["キャ", "キュ", "キョ"],
-    s: ["シャ", "シュ", "ショ"],
-    c: ["チャ", "チュ", "チョ"],
-    n: ["ニャ", "ニュ", "ニョ"],
-    h: ["ヒャ", "ヒュ", "ヒョ"],
-    m: ["ミャ", "ミュ", "ミョ"],
-    r: ["リャ", "リュ", "リョ"],
-    g: ["ギャ", "ギュ", "ギョ"],
-    j1: ["ジャ", "ジュ", "ジョ"],
-    j2: ["ヂャ", "ヂュ", "ヂョ"],
-    b: ["ビャ", "ビュ", "ビョ"],
-    p: ["ピャ", "ピュ", "ピョ"],
-  },
-};
+const mainRowNames: KanaRowNames[] = [
+  "regular_vowel",
+  "regular_k",
+  "regular_s",
+  "regular_t",
+  "regular_n",
+  "regular_h",
+  "regular_m",
+  "regular_y",
+  "regular_r",
+  "regular_w",
+  "regular_nn",
+  "dakuten_g",
+  "dakuten_z",
+  "dakuten_d",
+  "dakuten_b",
+  "dakuten_p",
+];
 
-const objectifyKana = (kanaMap: { [key: string]: string | string[] }, kanaStr: string | null) =>
-  kanaStr
-    ? {
-        kana: kanaStr,
-        romaji: kanaMap[kanaStr],
-      }
-    : null;
+const combinationRowNames: KanaRowNames[] = [
+  "combination_k",
+  "combination_s",
+  "combination_c",
+  "combination_n",
+  "combination_h",
+  "combination_m",
+  "combination_r",
+  "combination_g",
+  "combination_j1",
+  "combination_j2",
+  "combination_b",
+  "combination_p",
+];
 
-const makeRow = (kanaMap: { [key: string]: string | string[] }, kanaStrs: (string | null)[]) => {
-  return kanaStrs.map((str) => objectifyKana(kanaMap, str));
+const makeRowContent = (kanaType: KanaNames, kanaRowName: KanaRowNames) => {
+  return kanaRows[kanaType][kanaRowName].map((kanaChar) =>
+    kanaChar
+      ? {
+          kana: kanaChar,
+          romaji: kanaMap[kanaChar],
+        }
+      : null,
+  );
 };
 
 export interface KanaBoardProps {
-  kanaType: keyof typeof kana;
+  kanaType: KanaNames;
   combinations?: boolean;
+  options: KanaConfiguration[keyof KanaConfiguration];
+  onChange: (options: KanaConfiguration[keyof KanaConfiguration]) => void;
 }
 
-function KanaMainBoard({ kanaType }: KanaBoardProps) {
-  const rowArrays = kanaMainRows[kanaType];
+function KanaBoard({ kanaType, combinations = false, onChange, options }: KanaBoardProps) {
+  const rowNames = combinations ? combinationRowNames : mainRowNames;
+
+  const entries = Object.entries(options)
+    .filter(([key]) => rowNames.includes(key as KanaRowNames))
+    .map((o) => o[1]);
+  const hasChecked = entries.includes(true);
+  const hasUnchecked = entries.includes(false);
+
+  const handleMainCheckboxChange = () => {
+    onChange({
+      ...options,
+      ...rowNames.reduce((acc, val) => ({ ...acc, [val]: hasUnchecked }), {}),
+    });
+  };
 
   return (
-    <Group p="xs" bg="dark.8">
-      <KanaBoardRow content={makeRow(kana[kanaType].regular.vowel, rowArrays["vowel"])} />
-      <KanaBoardRow content={makeRow(kana[kanaType].regular.k, rowArrays["k"])} />
-      <KanaBoardRow content={makeRow(kana[kanaType].regular.s, rowArrays["s"])} />
-      <KanaBoardRow content={makeRow(kana[kanaType].regular.t, rowArrays["t"])} />
-      <KanaBoardRow content={makeRow(kana[kanaType].regular.n, rowArrays["n"])} />
-      <KanaBoardRow content={makeRow(kana[kanaType].regular.h, rowArrays["h"])} />
-      <KanaBoardRow content={makeRow(kana[kanaType].regular.m, rowArrays["m"])} />
-      <KanaBoardRow content={makeRow(kana[kanaType].regular.y, rowArrays["y"])} />
-      <KanaBoardRow content={makeRow(kana[kanaType].regular.r, rowArrays["r"])} />
-      <KanaBoardRow content={makeRow(kana[kanaType].regular.w, rowArrays["w"])} />
-      <KanaBoardRow content={makeRow(kana[kanaType].regular.nn, rowArrays["nn"])} />
-      <KanaBoardRow content={makeRow(kana[kanaType].dakuten.g, rowArrays["g"])} />
-      <KanaBoardRow content={makeRow(kana[kanaType].dakuten.z, rowArrays["z"])} />
-      <KanaBoardRow content={makeRow(kana[kanaType].dakuten.d, rowArrays["d"])} />
-      <KanaBoardRow content={makeRow(kana[kanaType].dakuten.b, rowArrays["b"])} />
-      <KanaBoardRow content={makeRow(kana[kanaType].dakuten.p, rowArrays["p"])} />
-    </Group>
+    <Container px={0}>
+      <Checkbox
+        mt="md"
+        mb="xs"
+        styles={{ label: { fontWeight: "bold", fontSize: "1rem" } }}
+        label={
+          <>
+            {kanaType[0].toUpperCase() + kanaType.slice(1)} {combinations && "Combinations"}
+          </>
+        }
+        indeterminate={hasChecked && hasUnchecked}
+        checked={!hasUnchecked}
+        onChange={handleMainCheckboxChange}
+      />
+      <Group p="xs" bg="dark.8" sx={combinations ? { gap: "0.4rem" } : undefined}>
+        {rowNames.map((rowName) => (
+          <KanaBoardRow
+            key={rowName}
+            content={makeRowContent(kanaType, rowName)}
+            checked={options[rowName]}
+            onChange={(checked) =>
+              onChange({
+                ...options,
+                [rowName]: checked,
+              })
+            }
+          />
+        ))}
+      </Group>
+    </Container>
   );
-}
-
-function KanaCombinationsBoard({ kanaType }: KanaBoardProps) {
-  const rowArrays = kanaCombinationRows[kanaType];
-
-  return (
-    <Group p="xs" bg="dark.8" sx={{ gap: "0.4rem" }}>
-      <KanaBoardRow content={makeRow(kana[kanaType].combinations.k, rowArrays["k"])} />
-      <KanaBoardRow content={makeRow(kana[kanaType].combinations.s, rowArrays["s"])} />
-      <KanaBoardRow content={makeRow(kana[kanaType].combinations.c, rowArrays["c"])} />
-      <KanaBoardRow content={makeRow(kana[kanaType].combinations.n, rowArrays["n"])} />
-      <KanaBoardRow content={makeRow(kana[kanaType].combinations.h, rowArrays["h"])} />
-      <KanaBoardRow content={makeRow(kana[kanaType].combinations.m, rowArrays["m"])} />
-      <KanaBoardRow content={makeRow(kana[kanaType].combinations.r, rowArrays["r"])} />
-      <KanaBoardRow content={makeRow(kana[kanaType].combinations.g, rowArrays["g"])} />
-      <KanaBoardRow content={makeRow(kana[kanaType].combinations.j1, rowArrays["j1"])} />
-      <KanaBoardRow content={makeRow(kana[kanaType].combinations.j2, rowArrays["j2"])} />
-      <KanaBoardRow content={makeRow(kana[kanaType].combinations.b, rowArrays["b"])} />
-      <KanaBoardRow content={makeRow(kana[kanaType].combinations.p, rowArrays["p"])} />
-    </Group>
-  );
-}
-
-function KanaBoard({ kanaType, combinations = false }: KanaBoardProps) {
-  return combinations ? <KanaCombinationsBoard kanaType={kanaType} /> : <KanaMainBoard kanaType={kanaType} />;
 }
 
 export default KanaBoard;

@@ -15,18 +15,22 @@ const romajiSet = new Set(
 export interface PracticeKanaInputProps {
   kana: { kana: string; romaji: string | string[] };
   onAnswer: (correct: boolean) => void;
+  showCorrectAnswer: boolean;
 }
 
-function PracticeKanaInput({ kana: { kana, romaji }, onAnswer }: PracticeKanaInputProps) {
+function PracticeKanaInput({ kana: { kana, romaji }, onAnswer, showCorrectAnswer }: PracticeKanaInputProps) {
   const [kanaInputValue, setKanaInputValue] = useState("");
+  const [gaveIncorrectAnswer, setGaveIncorrectAnswer] = useState(false);
 
   const checkKanaInput: ChangeEventHandler<HTMLInputElement> = (event) => {
     const value = event.currentTarget.value.toLowerCase();
+
     if (value === romaji || (Array.isArray(romaji) && romaji.some((romaji) => romaji === value))) {
-      onAnswer(true);
-    } else if (romajiSet.has(value)) {
-      onAnswer(false);
+      onAnswer(!gaveIncorrectAnswer);
     } else {
+      if (romajiSet.has(value)) {
+        setGaveIncorrectAnswer(true);
+      }
       setKanaInputValue(value);
     }
   };
@@ -34,7 +38,6 @@ function PracticeKanaInput({ kana: { kana, romaji }, onAnswer }: PracticeKanaInp
   const skip: KeyboardEventHandler<HTMLInputElement> = (event) => {
     if (event.key === "Enter") {
       onAnswer(false);
-      setKanaInputValue("");
     }
   };
 
@@ -53,9 +56,13 @@ function PracticeKanaInput({ kana: { kana, romaji }, onAnswer }: PracticeKanaInp
             input: {
               textAlign: "center",
             },
+            error: {
+              textAlign: "center",
+            },
           })}
           maxLength={5}
           value={kanaInputValue}
+          error={gaveIncorrectAnswer ? (showCorrectAnswer ? `${kana} = ${stringifyRomaji(romaji)}` : true) : false}
           onChange={checkKanaInput}
           onKeyDown={skip}
         />
