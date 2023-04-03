@@ -61,6 +61,7 @@ function PracticeKanaInput({ kana: { kana, romaji }, onAnswer, showCorrectAnswer
             },
           })}
           maxLength={5}
+          placeholder=". . ."
           value={kanaInputValue}
           error={gaveIncorrectAnswer ? (showCorrectAnswer ? `${kana} = ${stringifyRomaji(romaji)}` : true) : false}
           onChange={checkKanaInput}
