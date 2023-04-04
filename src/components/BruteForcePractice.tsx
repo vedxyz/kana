@@ -212,6 +212,9 @@ function BruteForcePractice({ kanaType }: BruteForcePracticeProps) {
         <Group>
           <PlayKanaSoundButton key={getDefaultRomaji(currentKana.romaji)} romaji={currentKana.romaji} />
           <PracticeOptions.CollapseButton opened={openedOptions} onClick={toggleOptions} />
+          <Text c="dimmed" fz="xs" opacity={0.35}>
+            Hover over kana to reveal answer
+          </Text>
         </Group>
         <Group>
           <Tooltip label="Correct / Total" withArrow>
