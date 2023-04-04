@@ -88,6 +88,14 @@ export type KanaRomajiMap = { [key: string]: KanaRomaji }; // key: KanaChars
 
 export type KanaLetter = { kana: KanaChars; romaji: KanaRomaji };
 
+export function getDefaultRomaji(romaji: KanaRomaji): string {
+  return Array.isArray(romaji) ? romaji[0] : romaji;
+}
+
+export function stringifyRomaji(romaji: KanaRomaji): string {
+  return Array.isArray(romaji) ? romaji.join(" / ") : romaji;
+}
+
 export function getBaseKanaConfiguration(nonempty = false): KanaConfiguration {
   const getKanaRowBooleans = () => ({
     regular_vowel: false,

@@ -1,10 +1,8 @@
 import { Container, Group, Stack, Text, TextInput, Tooltip } from "@mantine/core";
 import React, { ChangeEventHandler, KeyboardEventHandler, useState } from "react";
-import { kanaMap } from "../utilities/kana";
+import { kanaMap, stringifyRomaji } from "../utilities/kana";
 
 const kanaInputId = "kana-input";
-
-const stringifyRomaji = (romaji: string | string[]) => (Array.isArray(romaji) ? romaji.join(" / ") : romaji);
 
 const romajiSet = new Set(
   Object.values(kanaMap)
@@ -22,10 +20,16 @@ function PracticeKanaInput({ kana: { kana, romaji }, onAnswer, showCorrectAnswer
   const [kanaInputValue, setKanaInputValue] = useState("");
   const [gaveIncorrectAnswer, setGaveIncorrectAnswer] = useState(false);
 
+  const resetState = () => {
+    setKanaInputValue("");
+    setGaveIncorrectAnswer(false);
+  };
+
   const checkKanaInput: ChangeEventHandler<HTMLInputElement> = (event) => {
     const value = event.currentTarget.value.toLowerCase();
 
     if (value === romaji || (Array.isArray(romaji) && romaji.some((romaji) => romaji === value))) {
+      resetState();
       onAnswer(!gaveIncorrectAnswer);
     } else {
       if (romajiSet.has(value)) {
@@ -37,6 +41,7 @@ function PracticeKanaInput({ kana: { kana, romaji }, onAnswer, showCorrectAnswer
 
   const skip: KeyboardEventHandler<HTMLInputElement> = (event) => {
     if (event.key === "Enter") {
+      resetState();
       onAnswer(false);
     }
   };
@@ -61,7 +66,7 @@ function PracticeKanaInput({ kana: { kana, romaji }, onAnswer, showCorrectAnswer
             },
           })}
           maxLength={5}
-          placeholder=". . ."
+          placeholder="romaji"
           value={kanaInputValue}
           error={gaveIncorrectAnswer ? (showCorrectAnswer ? `${kana} = ${stringifyRomaji(romaji)}` : true) : false}
           onChange={checkKanaInput}
