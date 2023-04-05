@@ -50,7 +50,7 @@ function FreePractice() {
       newOptions.hiragana.regular_vowel = true;
     setOptions(newOptions);
 
-    streamRef.current = spacedRepetitionStream(kanaMapToArray(kanaConfigurationToMap(newOptions)));
+    streamRef.current = buildSpacedRepetitionStream(newOptions);
     setCurrentKana(streamRef.current.current());
   };
 
