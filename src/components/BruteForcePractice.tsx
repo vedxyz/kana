@@ -3,6 +3,7 @@ import { useDisclosure } from "@mantine/hooks";
 import React, { useRef, useState } from "react";
 import { bruteForce } from "../utilities/bruteforce";
 import { getDefaultRomaji, KanaChars, KanaLetter, KanaNames, spacedRepetitionStream } from "../utilities/kana";
+import { tooltipProps } from "../utilities/tooltip";
 import BruteForcePracticeOptions from "./BruteForcePracticeOptions";
 import PlayKanaSoundButton from "./PlayKanaSoundButton";
 import { MiscPracticeOptions } from "./PracticeCard";
@@ -236,7 +237,7 @@ function BruteForcePractice({ kanaType }: BruteForcePracticeProps) {
           </Text>
         </Group>
         <Group>
-          <Tooltip label="Correct / Total" withArrow>
+          <Tooltip {...tooltipProps} label="Correct / Total">
             <Text c="dimmed" fz="sm">{`${stats.correctCount} / ${stats.totalCount}`}</Text>
           </Tooltip>
         </Group>

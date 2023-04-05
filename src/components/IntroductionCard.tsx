@@ -1,6 +1,7 @@
 import React from "react";
 import { Anchor, Text, Title, Tooltip } from "@mantine/core";
 import TitledCard from "./TitledCard";
+import { tooltipProps } from "../utilities/tooltip";
 
 function IntroductionCard() {
   const bold = (text: string) => (
@@ -25,7 +26,7 @@ function IntroductionCard() {
         This is a page aiming to be an easy, effective, quick way to learn kana without suffering through mnemonics and
         such. All you need to do is to spend some time with the extremely simple exercise below, in which you will try
         to answer with the correct{" "}
-        <Tooltip label="Romanized spelling used to transliterate Japanese">
+        <Tooltip {...tooltipProps} label="Romanized spelling used to transliterate Japanese">
           <Text span italic c="blue.2" sx={{ textDecoration: "underline dotted" }}>
             romaji
           </Text>

@@ -6,6 +6,7 @@ import FreePractice from "./FreePractice";
 import PracticeMenu from "./PracticeMenu";
 import TitledCard from "./TitledCard";
 import WordPractice from "./WordPractice";
+import { tooltipProps } from "../utilities/tooltip";
 
 export interface MiscPracticeOptions {
   showCorrectAnswer: boolean;
@@ -19,7 +20,7 @@ export interface BackToMenuButtonProps {
 
 function BackToMenuButton({ onClick }: BackToMenuButtonProps) {
   return (
-    <Tooltip label="Go back to menu" withArrow>
+    <Tooltip {...tooltipProps} label="Go back to menu">
       <ActionIcon variant="light" onClick={onClick}>
         <IconChevronLeft size={32} />
       </ActionIcon>

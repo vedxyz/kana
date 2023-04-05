@@ -9,6 +9,7 @@ import {
   kanaMapToArray,
   spacedRepetitionStream,
 } from "../utilities/kana";
+import { tooltipProps } from "../utilities/tooltip";
 import FreePracticeOptions from "./FreePracticeOptions";
 import PlayKanaSoundButton from "./PlayKanaSoundButton";
 import { MiscPracticeOptions } from "./PracticeCard";
@@ -71,7 +72,7 @@ function FreePractice() {
           </Text>
         </Group>
         <Group>
-          <Tooltip label="Correct / Total" withArrow>
+          <Tooltip {...tooltipProps} label="Correct / Total">
             <Text c="dimmed" fz="sm">{`${stats.correctCount} / ${stats.totalCount}`}</Text>
           </Tooltip>
         </Group>

@@ -2,6 +2,7 @@ import { Button, Container, Group, Text, Tooltip } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import React, { useRef, useState } from "react";
 import { KanaNames, shuffledStream } from "../utilities/kana";
+import { tooltipProps } from "../utilities/tooltip";
 import { words } from "../utilities/words";
 import PracticeKanaInput from "./PracticeKanaInput";
 import PracticeOptions from "./PracticeOptions";
@@ -82,7 +83,7 @@ function WordPractice() {
           </Text>
         </Group>
         <Group>
-          <Tooltip label="Correct / Total" withArrow>
+          <Tooltip {...tooltipProps} label="Correct / Total">
             <Text c="dimmed" fz="sm">{`${stats.correctCount} / ${stats.totalCount}`}</Text>
           </Tooltip>
         </Group>

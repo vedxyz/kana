@@ -2,6 +2,7 @@ import { ActionIcon, Collapse, Container, Group, Title, Tooltip } from "@mantine
 import { useDisclosure } from "@mantine/hooks";
 import { IconLayoutNavbarCollapse } from "@tabler/icons-react";
 import React, { useEffect } from "react";
+import { tooltipProps } from "../utilities/tooltip";
 
 export interface TitledCardProps {
   title: string;
@@ -37,7 +38,7 @@ function TitledCard({ title, titleOrder = 1, children, collapsible = false, titl
         <Group>
           {titleActionElement}
           {collapsible && (
-            <Tooltip label="Show/Hide" withArrow>
+            <Tooltip {...tooltipProps} label="Show/Hide">
               <ActionIcon variant="light" onClick={toggle}>
                 <IconLayoutNavbarCollapse size={32} opacity={opacity} />
               </ActionIcon>

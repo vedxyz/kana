@@ -1,6 +1,7 @@
 import { Container, Group, Stack, Text, TextInput, Tooltip } from "@mantine/core";
 import React, { ChangeEventHandler, KeyboardEventHandler, useState } from "react";
 import { kanaMap, stringifyRomaji } from "../utilities/kana";
+import { tooltipProps } from "../utilities/tooltip";
 
 const kanaInputId = "kana-input";
 
@@ -70,7 +71,7 @@ function PracticeKanaInput({
   return (
     <Container>
       <Stack align="center">
-        <Tooltip label={stringifiedRomaji} withArrow opened={showAnswer}>
+        <Tooltip {...tooltipProps} label={stringifiedRomaji} opened={showAnswer}>
           <Text size={kana.length > 8 ? "2.8rem" : "3.75rem"}>{kana}</Text>
         </Tooltip>
       </Stack>
