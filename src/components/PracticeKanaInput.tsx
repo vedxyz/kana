@@ -71,7 +71,7 @@ function PracticeKanaInput({
   return (
     <Container>
       <Stack align="center">
-        <Tooltip {...tooltipProps} label={stringifiedRomaji} opened={showAnswer}>
+        <Tooltip {...tooltipProps} key={stringifiedRomaji} label={stringifiedRomaji} opened={showAnswer}>
           <Text size={kana.length > 8 ? "2.8rem" : "3.75rem"}>{kana}</Text>
         </Tooltip>
       </Stack>
