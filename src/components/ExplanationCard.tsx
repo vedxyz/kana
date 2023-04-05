@@ -32,7 +32,7 @@ function ExplanationCard() {
       </Text>
       <Text mt="sm">
         The smaller kana (ゅ, ょ, ゃ, ...) are used to combine kana sounds. For example, in ぎゃ, the consonant of ぎ
-        (gi) combines with the sound from や (ya) to form &quot;gya&quot; The small っ (distinct from つ/tsu) is not
+        (gi) combines with the sound from や (ya) to form &quot;gya&quot;. The small っ (distinct from つ/tsu) is not
         itself pronounced, but lengthens the consonant that follows, as in にっぽん (ni
         <Text span weight={700}>
           pp
