@@ -79,7 +79,10 @@ function BruteForcePractice({ kanaType }: BruteForcePracticeProps) {
     rollingWindowInEffect: false,
   });
   const effectiveStatThresholds = statThresholds[stage.learning ? "learning" : "reviewing"];
-  const statCounts = countStatGoals(stats);
+  const statCounts = {
+    ...countStatGoals(stats),
+    remainingLimitsTotal: Object.values(stats.remainingLimits).reduce<number>((acc, val) => acc + val, 0),
+  };
 
   const [miscOptions, setMiscOptions] = useState<MiscPracticeOptions>({ showCorrectAnswer: true });
 
@@ -87,7 +90,7 @@ function BruteForcePractice({ kanaType }: BruteForcePracticeProps) {
 
   const [currentKana, setCurrentKana] = useState(streamRef.current.current());
 
-  const [firstEncounterKana, setFirstEncounterKana] = useState<KanaChars[]>(kanaOfStage.map(k => k.kana));
+  const [firstEncounterKana, setFirstEncounterKana] = useState<KanaChars[]>(kanaOfStage.map((k) => k.kana));
   const firstEncounter = firstEncounterKana.includes(currentKana.kana);
 
   const computeNewStats = (correct: boolean): BruteForcePracticeStats => {
@@ -203,7 +206,7 @@ function BruteForcePractice({ kanaType }: BruteForcePracticeProps) {
             <Text c="dimmed" fz="xs">
               {!stageSatisfied
                 ? statCounts.remainingLimitsCount > 0
-                  ? `${statCounts.remainingLimitsCount} distinct kana left to eliminate`
+                  ? `${statCounts.remainingLimitsCount} distinct kana left to eliminate (${statCounts.remainingLimitsTotal} total)`
                   : `${
                       effectiveStatThresholds.rollingWindowCorrectLimit - statCounts.rollingCorrectCount
                     } more correct answers needed to clear the stage`
