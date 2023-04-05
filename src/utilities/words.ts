@@ -1,3 +1,5 @@
+import * as wanakana from "wanakana";
+
 const hiraganaWords = [
   "あいだ",
   "あいて",
@@ -679,4 +681,15 @@ const katakanaWords = [
   "ロボット",
 ];
 
-export const words = { hiragana: hiraganaWords, katakana: katakanaWords };
+function toRomaji(word: string): string {
+  return wanakana.toRomaji(word);
+}
+
+function toKanaObject(word: string) {
+  return {
+    kana: word,
+    romaji: toRomaji(word),
+  };
+}
+
+export const words = { hiragana: hiraganaWords, katakana: katakanaWords, toKanaObject };

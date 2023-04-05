@@ -15,6 +15,7 @@ export interface PracticeKanaInputProps {
   showAnswer?: boolean;
   onAnswer: (correct: boolean) => void;
   showCorrectAnswer: boolean;
+  wordMode?: boolean;
 }
 
 function PracticeKanaInput({
@@ -22,7 +23,10 @@ function PracticeKanaInput({
   showAnswer,
   onAnswer,
   showCorrectAnswer,
+  wordMode = false,
 }: PracticeKanaInputProps) {
+  const stringifiedRomaji = stringifyRomaji(romaji);
+
   const [kanaInputValue, setKanaInputValue] = useState("");
   const [gaveIncorrectAnswer, setGaveIncorrectAnswer] = useState(false);
 
@@ -45,6 +49,17 @@ function PracticeKanaInput({
     }
   };
 
+  const checkWordInput: ChangeEventHandler<HTMLInputElement> = (event) => {
+    const value = event.currentTarget.value.toLowerCase();
+
+    if (value === romaji) {
+      resetState();
+      onAnswer(true);
+    } else {
+      setKanaInputValue(value);
+    }
+  };
+
   const skip: KeyboardEventHandler<HTMLInputElement> = (event) => {
     if (event.key === "Enter") {
       resetState();
@@ -55,14 +70,14 @@ function PracticeKanaInput({
   return (
     <Container>
       <Stack align="center">
-        <Tooltip label={stringifyRomaji(romaji)} withArrow opened={showAnswer}>
-          <Text size="3.75rem">{kana}</Text>
+        <Tooltip label={stringifiedRomaji} withArrow opened={showAnswer}>
+          <Text size={kana.length > 8 ? "2.8rem" : "3.75rem"}>{kana}</Text>
         </Tooltip>
       </Stack>
       <Group position="center">
         <TextInput
           id={kanaInputId}
-          w="6rem"
+          w={wordMode ? "14rem" : "6rem"}
           styles={() => ({
             input: {
               textAlign: "center",
@@ -71,11 +86,11 @@ function PracticeKanaInput({
               textAlign: "center",
             },
           })}
-          maxLength={5}
+          maxLength={Math.max(5, ...(Array.isArray(romaji) ? romaji.map((r) => r.length) : [romaji.length]))}
           placeholder="romaji"
           value={kanaInputValue}
-          error={gaveIncorrectAnswer ? (showCorrectAnswer ? `${kana} = ${stringifyRomaji(romaji)}` : true) : false}
-          onChange={checkKanaInput}
+          error={gaveIncorrectAnswer ? (showCorrectAnswer ? `${kana} = ${stringifiedRomaji}` : true) : false}
+          onChange={wordMode ? checkWordInput : checkKanaInput}
           onKeyDown={skip}
         />
       </Group>
