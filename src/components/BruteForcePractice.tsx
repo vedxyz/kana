@@ -2,7 +2,7 @@ import { Button, Container, Group, Text, Tooltip } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import React, { useRef, useState } from "react";
 import { bruteForce } from "../utilities/bruteforce";
-import { getDefaultRomaji, KanaLetter, KanaNames, spacedRepetitionStream } from "../utilities/kana";
+import { getDefaultRomaji, KanaChars, KanaLetter, KanaNames, spacedRepetitionStream } from "../utilities/kana";
 import BruteForcePracticeOptions from "./BruteForcePracticeOptions";
 import PlayKanaSoundButton from "./PlayKanaSoundButton";
 import { MiscPracticeOptions } from "./PracticeCard";
@@ -87,6 +87,9 @@ function BruteForcePractice({ kanaType }: BruteForcePracticeProps) {
 
   const [currentKana, setCurrentKana] = useState(streamRef.current.current());
 
+  const [firstEncounterKana, setFirstEncounterKana] = useState<KanaChars[]>(kanaOfStage.map(k => k.kana));
+  const firstEncounter = firstEncounterKana.includes(currentKana.kana);
+
   const computeNewStats = (correct: boolean): BruteForcePracticeStats => {
     const newRemainingLimits = { ...stats.remainingLimits };
     if (correct && Object.prototype.hasOwnProperty.call(newRemainingLimits, currentKana.kana)) {
@@ -124,6 +127,10 @@ function BruteForcePractice({ kanaType }: BruteForcePracticeProps) {
       setStageSatisfied(true);
     }
 
+    if (stage.learning && firstEncounter) {
+      setFirstEncounterKana([...firstEncounterKana.filter((kana) => kana !== currentKana.kana)]);
+    }
+
     if (!correct) {
       streamRef.current.onFail();
     }
@@ -152,6 +159,8 @@ function BruteForcePractice({ kanaType }: BruteForcePracticeProps) {
     streamRef.current = spacedRepetitionStream(newKanaOfStage);
     setCurrentKana(streamRef.current.current());
 
+    setFirstEncounterKana(newStage.learning ? newKanaOfStage.map((k) => k.kana) : []);
+
     setStats((prev) => ({
       correctCount: prev.correctCount,
       totalCount: prev.totalCount,
@@ -170,7 +179,12 @@ function BruteForcePractice({ kanaType }: BruteForcePracticeProps) {
 
   return (
     <Container px={0}>
-      <PracticeKanaInput kana={currentKana} onAnswer={onAnswer} showCorrectAnswer={miscOptions.showCorrectAnswer} />
+      <PracticeKanaInput
+        kana={currentKana}
+        showAnswer={firstEncounter ? true : undefined}
+        onAnswer={onAnswer}
+        showCorrectAnswer={miscOptions.showCorrectAnswer}
+      />
 
       {bruteForce.isFinalStage(stage.stage) && !stage.learning && stageSatisfied ? (
         <Container mt="3rem" fz="sm" px={0}>

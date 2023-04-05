@@ -12,11 +12,17 @@ const romajiSet = new Set(
 
 export interface PracticeKanaInputProps {
   kana: { kana: string; romaji: string | string[] };
+  showAnswer?: boolean;
   onAnswer: (correct: boolean) => void;
   showCorrectAnswer: boolean;
 }
 
-function PracticeKanaInput({ kana: { kana, romaji }, onAnswer, showCorrectAnswer }: PracticeKanaInputProps) {
+function PracticeKanaInput({
+  kana: { kana, romaji },
+  showAnswer,
+  onAnswer,
+  showCorrectAnswer,
+}: PracticeKanaInputProps) {
   const [kanaInputValue, setKanaInputValue] = useState("");
   const [gaveIncorrectAnswer, setGaveIncorrectAnswer] = useState(false);
 
@@ -49,7 +55,7 @@ function PracticeKanaInput({ kana: { kana, romaji }, onAnswer, showCorrectAnswer
   return (
     <Container>
       <Stack align="center">
-        <Tooltip label={stringifyRomaji(romaji)} withArrow>
+        <Tooltip label={stringifyRomaji(romaji)} withArrow opened={showAnswer}>
           <Text size="3.75rem">{kana}</Text>
         </Tooltip>
       </Stack>
