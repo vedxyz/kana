@@ -8,6 +8,9 @@ function ExplanationCard() {
 
   return (
     <TitledCard title="Explanation" titleOrder={3} collapsible>
+      <div
+        dangerouslySetInnerHTML={{ __html: "<!-- This information was taken/paraphrased from the DJT kana page. -->" }}
+      />
       <Text>
         Some kana have two dots (◌゙,{" "}
         <Anchor href="https://en.wikipedia.org/wiki/Dakuten" italic>
