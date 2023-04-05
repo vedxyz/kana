@@ -22,7 +22,7 @@ function BruteForcePracticeStageOption({
   current = false,
   onStageChange,
 }: BruteForcePracticeStageOptionProps) {
-  const buildConfig = () => bruteForce.getKanaConfigurationForStage(kanaType, stage, true);
+  const buildConfig = () => bruteForce.getKanaConfigurationForStage(kanaType, stage, false);
 
   const [opened, { toggle }] = useDisclosure(current);
   const [config, setConfig] = useState<KanaConfiguration | null>(current ? buildConfig() : null);
