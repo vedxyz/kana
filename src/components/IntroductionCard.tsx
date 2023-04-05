@@ -33,6 +33,9 @@ function IntroductionCard() {
         for the shown kana. This way of learning is also referred to as brute forcing, because you try again and again
         until it sticks, and in the case of kana, it sticks rather easily with this method.
       </Text>
+      <Text mt="xs" fz="xs">
+        Have an issue/request/etc.? Open an issue on <Anchor href="https://github.com/vedxyz/kana">GitHub</Anchor>.
+      </Text>
     </TitledCard>
   );
 }
