@@ -219,7 +219,9 @@ function BruteForcePractice({ kanaType }: BruteForcePracticeProps) {
             </Button>
           ) : (
             <Text c="dimmed" fz="xs">
-              {nextStage ? `Next Stage (${stage.learning ? "Review" : nextStage.name})` : "Final Stage"}
+              {nextStage || stage.learning
+                ? `Next Stage (${stage.learning ? "Review" : nextStage.name})`
+                : "Final Stage"}
             </Text>
           )}
         </Group>
