@@ -5,6 +5,7 @@ import { bruteForce } from "../utilities/bruteforce";
 import { getDefaultRomaji, KanaChars, KanaLetter, KanaNames, spacedRepetitionStream } from "../utilities/kana";
 import { tooltipProps } from "../utilities/tooltip";
 import BruteForcePracticeOptions from "./BruteForcePracticeOptions";
+import KanaAnswerTooltipHint from "./KanaAnswerTooltipHint";
 import PlayKanaSoundButton from "./PlayKanaSoundButton";
 import { MiscPracticeOptions } from "./PracticeCard";
 import PracticeKanaInput from "./PracticeKanaInput";
@@ -232,9 +233,7 @@ function BruteForcePractice({ kanaType }: BruteForcePracticeProps) {
         <Group>
           <PlayKanaSoundButton key={getDefaultRomaji(currentKana.romaji)} romaji={currentKana.romaji} />
           <PracticeOptions.CollapseButton opened={openedOptions} onClick={toggleOptions} />
-          <Text c="dimmed" fz="xs" opacity={0.35}>
-            Hover over kana to reveal answer
-          </Text>
+          <KanaAnswerTooltipHint />
         </Group>
         <Group>
           <Tooltip {...tooltipProps} label="Correct / Total">

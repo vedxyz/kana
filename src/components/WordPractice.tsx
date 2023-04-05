@@ -4,6 +4,7 @@ import React, { useRef, useState } from "react";
 import { KanaNames, shuffledStream } from "../utilities/kana";
 import { tooltipProps } from "../utilities/tooltip";
 import { words } from "../utilities/words";
+import KanaAnswerTooltipHint from "./KanaAnswerTooltipHint";
 import PracticeKanaInput from "./PracticeKanaInput";
 import PracticeOptions from "./PracticeOptions";
 import WordPracticeOptions from "./WordPracticeOptions";
@@ -78,9 +79,7 @@ function WordPractice() {
             Search Jisho
           </Button>
           <PracticeOptions.CollapseButton opened={openedOptions} onClick={toggleOptions} />
-          <Text c="dimmed" fz="xs" opacity={0.35}>
-            Hover over kana to reveal answer
-          </Text>
+          <KanaAnswerTooltipHint />
         </Group>
         <Group>
           <Tooltip {...tooltipProps} label="Correct / Total">
