@@ -11,7 +11,7 @@ function PracticeMenu({ onPageChange }: PracticeMenuProps) {
     variant: "light",
     fullWidth: true,
     styles: {
-      label: { display: "block", textAlign: "center", padding: "0.8rem" },
+      label: { display: "block", textAlign: "center", padding: "0.8rem", whiteSpace: "normal" },
       root: { height: "unset" },
     },
   };

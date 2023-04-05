@@ -19,7 +19,7 @@ function ExplanationCard() {
         ) next to them to indicate that the consonant is &quot;muddied&quot; For example, か (ka) becomes が (ga). The
         consonants transform as follows:
       </Text>
-      <List sx={{ display: "flex", gap: "2.5rem" }}>
+      <List sx={{ display: "flex", flexWrap: "wrap", columnGap: "2.5rem" }}>
         <List.Item>k {RightArrow} g</List.Item>
         <List.Item>t {RightArrow} d</List.Item>
         <List.Item>h/f {RightArrow} b</List.Item>
