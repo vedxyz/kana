@@ -70,9 +70,9 @@ function WordPractice() {
           <Button
             variant="subtle"
             size="sm"
-            onClick={() => {
-              window.open(`https://jisho.org/search/${currentKana.kana}`, "_blank");
-            }}
+            component="a"
+            href={`https://jisho.org/search/${currentKana.kana}`}
+            target="_blank"
           >
             Search Jisho
           </Button>
