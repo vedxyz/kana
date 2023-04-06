@@ -1,4 +1,4 @@
-import { Checkbox, Container, Group } from "@mantine/core";
+import { Checkbox, Container, Group, Text } from "@mantine/core";
 import React from "react";
 import { KanaChars, KanaConfiguration, kanaMap, KanaNames, KanaRowNames } from "../utilities/kana";
 import KanaBoardRow from "./KanaBoardRow";
@@ -115,6 +115,32 @@ const makeRowContent = (kanaType: KanaNames, kanaRowName: KanaRowNames) => {
   );
 };
 
+const getCheckStates = (options: KanaBoardProps["options"]) => {
+  const allEntries = Object.entries(options);
+
+  const getBooleansForOptionKey = (optionKey: string) =>
+    allEntries.filter(([key]) => key.startsWith(optionKey)).map((o) => o[1]);
+
+  const entries = {
+    regular: getBooleansForOptionKey("regular_"),
+    dakuten: getBooleansForOptionKey("dakuten_"),
+    combination: getBooleansForOptionKey("combination_"),
+  };
+
+  const getChecksObject = (category: keyof typeof entries) => ({
+    hasChecked: entries[category].includes(true),
+    hasUnchecked: entries[category].includes(false),
+  });
+
+  const checks = {
+    regular: getChecksObject("regular"),
+    dakuten: getChecksObject("dakuten"),
+    combination: getChecksObject("combination"),
+  };
+
+  return checks;
+};
+
 export interface KanaBoardProps {
   kanaType: KanaNames;
   combinations?: boolean;
@@ -125,34 +151,56 @@ export interface KanaBoardProps {
 function KanaBoard({ kanaType, combinations = false, onChange, options }: KanaBoardProps) {
   const rowNames = combinations ? combinationRowNames : mainRowNames;
 
-  const entries = Object.entries(options)
-    .filter(([key]) => rowNames.includes(key as KanaRowNames))
-    .map((o) => o[1]);
-  const hasChecked = entries.includes(true);
-  const hasUnchecked = entries.includes(false);
+  const checks = getCheckStates(options);
+  const allHasChecked = combinations
+    ? checks.combination.hasChecked
+    : checks.regular.hasChecked || checks.dakuten.hasChecked;
+  const allHasUnchecked = combinations
+    ? checks.combination.hasUnchecked
+    : checks.regular.hasUnchecked || checks.dakuten.hasUnchecked;
 
-  const handleMainCheckboxChange = () => {
+  const handleCheckboxGroupToggle = (category: "regular" | "dakuten" | "all") => {
+    const hasUnchecked = category === "all" ? allHasUnchecked : checks[category].hasUnchecked;
+    const filteredRowNames = category === "all" ? rowNames : rowNames.filter((n) => n.startsWith(category));
+
     onChange({
       ...options,
-      ...rowNames.reduce((acc, val) => ({ ...acc, [val]: hasUnchecked }), {}),
+      ...filteredRowNames.reduce((acc, val) => ({ ...acc, [val]: hasUnchecked }), {}),
     });
   };
 
   return (
     <Container px={0}>
-      <Checkbox
-        mt="md"
-        mb="xs"
-        styles={{ label: { fontWeight: "bold", fontSize: "1rem" } }}
-        label={
-          <>
-            {kanaType[0].toUpperCase() + kanaType.slice(1)} {combinations && "Combinations"}
-          </>
-        }
-        indeterminate={hasChecked && hasUnchecked}
-        checked={!hasUnchecked}
-        onChange={handleMainCheckboxChange}
-      />
+      <Group position="apart" mb="xs" mt="md">
+        <Text weight="bold" size="1rem">
+          {kanaType[0].toUpperCase() + kanaType.slice(1)} {combinations && "Combinations"}
+        </Text>
+        <Group>
+          <Checkbox
+            label="All"
+            indeterminate={allHasChecked && allHasUnchecked}
+            checked={!allHasUnchecked}
+            onChange={() => handleCheckboxGroupToggle("all")}
+          />
+          {!combinations && (
+            <>
+              <Checkbox
+                label="Regular"
+                indeterminate={checks.regular.hasChecked && checks.regular.hasUnchecked}
+                checked={!checks.regular.hasUnchecked}
+                onChange={() => handleCheckboxGroupToggle("regular")}
+              />
+              <Checkbox
+                label="Dakuten"
+                indeterminate={checks.dakuten.hasChecked && checks.dakuten.hasUnchecked}
+                checked={!checks.dakuten.hasUnchecked}
+                onChange={() => handleCheckboxGroupToggle("dakuten")}
+              />
+            </>
+          )}
+        </Group>
+      </Group>
+
       <Group p="xs" bg="dark.8" sx={combinations ? { gap: "0.4rem" } : undefined}>
         {rowNames.map((rowName) => (
           <KanaBoardRow
