@@ -41,7 +41,7 @@ function ExplanationCard() {
       </Text>
       <Text italic mt="sm">
         See the relevant sections on{" "}
-        <Anchor href="https://itazuraneko.neocities.org/grammar/taekim#0%20The%20Writing%20System">
+        <Anchor href="https://gohoneko.neocities.org/grammar/taekim#0%20The%20Writing%20System">
           Tae Kim&apos;s Guide
         </Anchor>{" "}
         for more information.
