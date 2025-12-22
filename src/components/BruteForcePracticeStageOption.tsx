@@ -1,6 +1,6 @@
 import { Button, Collapse, Container, Group, Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import React, { useState } from "react";
+import { useState } from "react";
 import { bruteForce, BruteForcePracticeStage } from "../utilities/bruteforce";
 import { KanaConfiguration, KanaNames } from "../utilities/kana";
 import KanaBoard from "./KanaBoard";
@@ -61,11 +61,11 @@ function BruteForcePracticeStageOption({
         {config && (
           <>
             {kanaType.flatMap((type) => {
-              <KanaBoard kanaType={type} options={config[type]} onChange={mockOnChange} />;
+              return <KanaBoard kanaType={type} options={config[type]} onChange={mockOnChange} />;
             })}
             {stage.name === bruteForce.stages[bruteForce.stages.length - 1].name &&
               kanaType.flatMap((type) => {
-                <KanaBoard kanaType={type} options={config[type]} onChange={mockOnChange} combinations />;
+                return <KanaBoard kanaType={type} options={config[type]} onChange={mockOnChange} />;
               })}
           </>
         )}
