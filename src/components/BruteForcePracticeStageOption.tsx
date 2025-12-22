@@ -6,7 +6,7 @@ import { KanaConfiguration, KanaNames } from "../utilities/kana";
 import KanaBoard from "./KanaBoard";
 
 export interface BruteForcePracticeStageOptionProps {
-  kanaType: KanaNames;
+  kanaType: KanaNames[];
   stage: BruteForcePracticeStage;
   current?: boolean;
   onStageChange: (newStage: BruteForcePracticeStage) => void;
@@ -60,10 +60,13 @@ function BruteForcePracticeStageOption({
       <Collapse in={opened}>
         {config && (
           <>
-            <KanaBoard kanaType={kanaType} options={config[kanaType]} onChange={mockOnChange} />
-            {stage.name === bruteForce.stages[bruteForce.stages.length - 1].name && (
-              <KanaBoard kanaType={kanaType} options={config[kanaType]} onChange={mockOnChange} combinations />
-            )}
+            {kanaType.flatMap((type) => {
+              <KanaBoard kanaType={type} options={config[type]} onChange={mockOnChange} />;
+            })}
+            {stage.name === bruteForce.stages[bruteForce.stages.length - 1].name &&
+              kanaType.flatMap((type) => {
+                <KanaBoard kanaType={type} options={config[type]} onChange={mockOnChange} combinations />;
+              })}
           </>
         )}
       </Collapse>

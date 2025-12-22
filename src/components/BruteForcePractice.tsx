@@ -62,7 +62,7 @@ interface BruteForcePracticeStats {
 }
 
 export interface BruteForcePracticeProps {
-  kanaType: KanaNames;
+  kanaType: KanaNames[];
 }
 
 function BruteForcePractice({ kanaType }: BruteForcePracticeProps) {
@@ -195,7 +195,8 @@ function BruteForcePractice({ kanaType }: BruteForcePracticeProps) {
         <Container mt="3rem" fz="sm" px={0}>
           <Text>Congratulations! You have learnt {kanaType}! </Text>
           <Text>
-            If you&apos;re still missing {kanaType === "hiragana" ? "katakana" : "hiragana"}, you can learn that now.
+            If you&apos;re still missing{" "}
+            {kanaType.includes("hiragana") && kanaType.length === 1 ? "katakana" : "hiragana"}, you can learn that now.
             You can also make use of Free Mode and Word Mode.
           </Text>
         </Container>
