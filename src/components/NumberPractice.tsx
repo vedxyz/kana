@@ -10,33 +10,33 @@ import PracticeOptions from "./PracticeOptions";
 import NumberPracticeOptions from "./NumberPracticeOptions";
 
 export interface NumberPracticeConfiguration {
-  practice_type: 'kana_to_digits' | 'kana_to_romaji' | 'digits_to_romaji';
+  practice_type: "kana_to_digits" | "kana_to_romaji" | "digits_to_romaji";
 }
 
 const buildShuffledStream = () => {
   const shuffledNumbers: JpnNumbersKana[] = [];
-  shuffledNumbers.push(...(Object.keys(numbers["kana_to_digits"]) as JpnNumbersKana[]))
+  shuffledNumbers.push(...(Object.keys(numbers["kana_to_digits"]) as JpnNumbersKana[]));
   return shuffledStream<JpnNumbersKana>(shuffledNumbers);
 };
 
 const getKanaObjectForKana = (kana: JpnNumbersKana, options: NumberPracticeConfiguration) => {
-  if (options.practice_type == 'kana_to_romaji') {
+  if (options.practice_type == "kana_to_romaji") {
     return kanaObject(String(kana), numbers.kana_to_romaji[kana]);
-  } else if (options.practice_type == 'kana_to_digits') {
+  } else if (options.practice_type == "kana_to_digits") {
     return kanaObject(String(kana), String(numbers.kana_to_digits[kana]));
-  } else if (options.practice_type == 'digits_to_romaji') {
+  } else if (options.practice_type == "digits_to_romaji") {
     return kanaObject(String(numbers.kana_to_digits[kana]), numbers.kana_to_romaji[kana]);
   }
-  console.log("Error: getKanaObjectForKana has no valid options enabled!")
+  console.log("Error: getKanaObjectForKana has no valid options enabled!");
   return kanaObject(String(kana), "no-kana-found");
-}
+};
 
 function NumberPractice() {
   const [openedOptions, { toggle: toggleOptions }] = useDisclosure(true);
 
   const [stats, setStats] = useState({ correctCount: 0, totalCount: 0 });
 
-  const [options, setOptions] = useState<NumberPracticeConfiguration>({ practice_type: 'kana_to_romaji' });
+  const [options, setOptions] = useState<NumberPracticeConfiguration>({ practice_type: "kana_to_romaji" });
 
   const streamRef = useRef(buildShuffledStream());
 

@@ -32,7 +32,7 @@ export const numbers = Object.freeze({
 export type JpnNumbers = typeof numbers;
 export type JpnNumbersNames = keyof JpnNumbers;
 type JpnNumbersRowsObject = JpnNumbers[JpnNumbersNames];
-export type JpnNumbersKana = keyof JpnNumbersRowsObject
+export type JpnNumbersKana = keyof JpnNumbersRowsObject;
 
 export function getDefaultRomaji(romaji: string | string[]): string {
   return Array.isArray(romaji) ? romaji[0] : romaji;
