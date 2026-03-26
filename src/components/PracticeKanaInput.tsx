@@ -16,7 +16,7 @@ export interface PracticeKanaInputProps {
   showAnswer?: boolean;
   onAnswer: (correct: boolean) => void;
   showCorrectAnswer: boolean;
-  wordMode?: boolean;
+  mode?: "kana" | "word" | "number";
 }
 
 function PracticeKanaInput({
@@ -24,7 +24,7 @@ function PracticeKanaInput({
   showAnswer,
   onAnswer,
   showCorrectAnswer,
-  wordMode = false,
+  mode = "kana",
 }: PracticeKanaInputProps) {
   const stringifiedRomaji = stringifyRomaji(romaji);
 
@@ -61,6 +61,20 @@ function PracticeKanaInput({
     }
   };
 
+  const checkNumberInput: ChangeEventHandler<HTMLInputElement> = (event) => {
+    const value = event.currentTarget.value.toLowerCase();
+
+    if (value === romaji || (Array.isArray(romaji) && romaji.some((romaji) => romaji === value))) {
+      resetState();
+      onAnswer(!gaveIncorrectAnswer);
+    } else {
+      if (romajiSet.has(value)) {
+        setGaveIncorrectAnswer(true);
+      }
+      setKanaInputValue(value);
+    }
+  };
+
   const skip: KeyboardEventHandler<HTMLInputElement> = (event) => {
     if (event.key === "Enter") {
       resetState();
@@ -72,13 +86,13 @@ function PracticeKanaInput({
     <Container>
       <Stack align="center">
         <Tooltip {...tooltipProps} key={stringifiedRomaji} label={stringifiedRomaji} opened={showAnswer}>
-          <Text size={wordMode ? "1.4rem" : "3.75rem"}>{kana}</Text>
+          <Text size={mode == "word" ? "1.4rem" : "3.75rem"}>{kana}</Text>
         </Tooltip>
       </Stack>
       <Group position="center">
         <TextInput
           id={kanaInputId}
-          w={wordMode ? "14rem" : "6rem"}
+          w={mode == "word" ? "14rem" : "6rem"}
           styles={() => ({
             input: {
               textAlign: "center",
@@ -91,7 +105,7 @@ function PracticeKanaInput({
           placeholder="romaji"
           value={kanaInputValue}
           error={gaveIncorrectAnswer ? (showCorrectAnswer ? `${kana} = ${stringifiedRomaji}` : true) : false}
-          onChange={wordMode ? checkWordInput : checkKanaInput}
+          onChange={mode == "word" ? checkWordInput : mode == "number" ? checkNumberInput : checkKanaInput}
           onKeyDown={skip}
         />
       </Group>

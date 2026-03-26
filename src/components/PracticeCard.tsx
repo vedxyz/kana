@@ -5,6 +5,7 @@ import BruteForceMenu from "./BruteForceMenu";
 import FreePractice from "./FreePractice";
 import PracticeMenu from "./PracticeMenu";
 import TitledCard from "./TitledCard";
+import NumberPractice from "./NumberPractice";
 import WordPractice from "./WordPractice";
 import { tooltipProps } from "../utilities/tooltip";
 
@@ -12,7 +13,7 @@ export interface MiscPracticeOptions {
   showCorrectAnswer: boolean;
 }
 
-export type PracticeCardPages = "menu" | "bruteforce" | "free" | "word";
+export type PracticeCardPages = "menu" | "bruteforce" | "free" | "word" | "number";
 
 export interface BackToMenuButtonProps {
   onClick: () => void;
@@ -50,6 +51,9 @@ function PracticeCard() {
       break;
     case "word":
       pageElement = <WordPractice />;
+      break;
+    case "number":
+      pageElement = <NumberPractice />;
       break;
   }
 

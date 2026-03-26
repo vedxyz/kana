@@ -59,7 +59,7 @@ function WordPractice() {
 
   return (
     <Container px={0}>
-      <PracticeKanaInput wordMode kana={currentKana} onAnswer={onAnswer} showCorrectAnswer={false} />
+      <PracticeKanaInput mode="word" kana={currentKana} onAnswer={onAnswer} showCorrectAnswer={false} />
 
       {previousKana && (
         <Text c="dimmed" fz="xs" mt="2.5rem">

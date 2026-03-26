@@ -30,6 +30,10 @@ function PracticeMenu({ onPageChange }: PracticeMenuProps) {
         <Title order={3}>Word Mode</Title>
         <Text weight="normal">Practice kana chaining with words from N5/N4 decks</Text>
       </Button>
+      <Button {...buttonProps} mt="sm" onClick={() => onPageChange("number")}>
+        <Title order={3}>Number Mode</Title>
+        <Text weight="normal">Practice numbers</Text>
+      </Button>
     </Container>
   );
 }
