@@ -10,7 +10,7 @@ import PracticeOptions from "./PracticeOptions";
 import NumberPracticeOptions from "./NumberPracticeOptions";
 
 export interface NumberPracticeConfiguration {
-  practice_type: "kana_to_digits" | "kana_to_romaji" | "digits_to_romaji";
+  practice_type: "kana_to_romaji" | "kana_to_digits" | "digits_to_romaji";
 }
 
 const buildShuffledStream = () => {

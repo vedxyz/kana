@@ -16,18 +16,19 @@ function NumberPracticeOptions({ options, onChange }: NumberPracticeOptionsProps
       <Radio.Group
         name="practiceType"
         label="What do you want to practice?"
+        value={options.practice_type}
         withAsterisk
         onChange={(e) =>
           onChange({
             ...options,
-            practice_type: e.valueOf() as "kana_to_digits" | "kana_to_romaji" | "digits_to_romaji",
+            practice_type: e.valueOf() as "kana_to_romaji" | "kana_to_digits" | "digits_to_romaji",
           })
         }
       >
         <Group mt="xs">
-          <Radio value="kana_to_digits" label="Kana -> Digits" />
-          <Radio value="kana_to_romaji" label="Kana -> Romaji" />
-          <Radio value="digits_to_romaji" label="Digits -> Romaji" />
+          <Radio value="kana_to_romaji" label="Kana to Romaji" />
+          <Radio value="kana_to_digits" label="Kana to Digits" />
+          <Radio value="digits_to_romaji" label="Digits to Romaji" />
         </Group>
       </Radio.Group>
     </>
