@@ -17,6 +17,8 @@ export interface PracticeKanaInputProps {
   onAnswer: (correct: boolean) => void;
   showCorrectAnswer: boolean;
   mode?: "kana" | "word" | "number";
+  placeholder?: string;
+  fontSize?: string;
 }
 
 function PracticeKanaInput({
@@ -25,6 +27,8 @@ function PracticeKanaInput({
   onAnswer,
   showCorrectAnswer,
   mode = "kana",
+  placeholder = "romaji",
+  fontSize,
 }: PracticeKanaInputProps) {
   const stringifiedRomaji = stringifyRomaji(romaji);
 
@@ -64,13 +68,10 @@ function PracticeKanaInput({
   const checkNumberInput: ChangeEventHandler<HTMLInputElement> = (event) => {
     const value = event.currentTarget.value.toLowerCase();
 
-    if (value === romaji || (Array.isArray(romaji) && romaji.some((romaji) => romaji === value))) {
+    if (value === romaji || (Array.isArray(romaji) && romaji.some((r) => r === value))) {
       resetState();
       onAnswer(!gaveIncorrectAnswer);
     } else {
-      if (romajiSet.has(value)) {
-        setGaveIncorrectAnswer(true);
-      }
       setKanaInputValue(value);
     }
   };
@@ -86,13 +87,13 @@ function PracticeKanaInput({
     <Container>
       <Stack align="center">
         <Tooltip {...tooltipProps} key={stringifiedRomaji} label={stringifiedRomaji} opened={showAnswer}>
-          <Text size={mode == "word" ? "1.4rem" : "3.75rem"}>{kana}</Text>
+          <Text size={fontSize ?? (mode === "word" ? "1.4rem" : "3.75rem")}>{kana}</Text>
         </Tooltip>
       </Stack>
       <Group position="center">
         <TextInput
           id={kanaInputId}
-          w={mode == "word" ? "14rem" : "6rem"}
+          w={mode === "word" ? "14rem" : "6rem"}
           styles={() => ({
             input: {
               textAlign: "center",
@@ -102,10 +103,10 @@ function PracticeKanaInput({
             },
           })}
           maxLength={Math.max(5, ...(Array.isArray(romaji) ? romaji.map((r) => r.length) : [romaji.length]))}
-          placeholder="romaji"
+          placeholder={placeholder}
           value={kanaInputValue}
           error={gaveIncorrectAnswer ? (showCorrectAnswer ? `${kana} = ${stringifiedRomaji}` : true) : false}
-          onChange={mode == "word" ? checkWordInput : mode == "number" ? checkNumberInput : checkKanaInput}
+          onChange={mode === "word" ? checkWordInput : mode === "number" ? checkNumberInput : checkKanaInput}
           onKeyDown={skip}
         />
       </Group>

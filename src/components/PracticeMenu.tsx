@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, ButtonProps, Container, Text, Title } from "@mantine/core";
+import { Button, ButtonProps, Container, Divider, Text, Title } from "@mantine/core";
 import { PracticeCardPages } from "./PracticeCard";
 
 export interface PracticeMenuProps {
@@ -30,9 +30,17 @@ function PracticeMenu({ onPageChange }: PracticeMenuProps) {
         <Title order={3}>Word Mode</Title>
         <Text weight="normal">Practice kana chaining with words from N5/N4 decks</Text>
       </Button>
-      <Button {...buttonProps} mt="sm" onClick={() => onPageChange("number")}>
-        <Title order={3}>Number Mode</Title>
-        <Text weight="normal">Practice numbers</Text>
+
+      <Divider my="md" />
+
+      <Button
+        {...buttonProps}
+        variant="subtle"
+        sx={{ border: "1px solid rgba(25, 113, 194, 0.2)" }}
+        onClick={() => onPageChange("advanced-menu")}
+      >
+        <Title order={4}>Advanced / Niche</Title>
+        <Text weight="normal">Modes involving kanji or other niche cases, such as number practice</Text>
       </Button>
     </Container>
   );

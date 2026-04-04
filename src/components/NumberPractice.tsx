@@ -1,34 +1,58 @@
 import { Container, Group, Text, Tooltip } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import React, { useRef, useState } from "react";
-import { shuffledStream } from "../utilities/kana";
+import { shuffledStream, stringifyRomaji } from "../utilities/kana";
 import { tooltipProps } from "../utilities/tooltip";
-import { numbers, JpnNumbersKana, kanaObject } from "../utilities/numbers";
+import { basicDigits, getBasicDigitQuestion, generateCompoundQuestion } from "../utilities/numbers";
 import KanaAnswerTooltipHint from "./KanaAnswerTooltipHint";
 import PracticeKanaInput from "./PracticeKanaInput";
 import PracticeOptions from "./PracticeOptions";
 import NumberPracticeOptions from "./NumberPracticeOptions";
 
+export type CompoundRange = 99 | 999 | 9999 | 99999;
+
 export interface NumberPracticeConfiguration {
-  practice_type: "kana_to_romaji" | "kana_to_digits" | "digits_to_romaji";
+  phase: "basic" | "compound";
+  basicMode: "kanji_to_romaji" | "digits_to_romaji";
+  compoundRange: CompoundRange;
 }
 
-const buildShuffledStream = () => {
-  const shuffledNumbers: JpnNumbersKana[] = [];
-  shuffledNumbers.push(...(Object.keys(numbers["kana_to_digits"]) as JpnNumbersKana[]));
-  return shuffledStream<JpnNumbersKana>(shuffledNumbers);
+interface QuestionStream {
+  current: () => { kana: string; romaji: string | string[] };
+  next: () => { kana: string; romaji: string | string[] };
+}
+
+const buildBasicStream = (mode: NumberPracticeConfiguration["basicMode"]): QuestionStream => {
+  const stream = shuffledStream(basicDigits);
+  return {
+    current: () => getBasicDigitQuestion(stream.current(), mode),
+    next: () => {
+      stream.next();
+      return getBasicDigitQuestion(stream.current(), mode);
+    },
+  };
 };
 
-const getKanaObjectForKana = (kana: JpnNumbersKana, options: NumberPracticeConfiguration) => {
-  if (options.practice_type == "kana_to_romaji") {
-    return kanaObject(String(kana), numbers.kana_to_romaji[kana]);
-  } else if (options.practice_type == "kana_to_digits") {
-    return kanaObject(String(kana), String(numbers.kana_to_digits[kana]));
-  } else if (options.practice_type == "digits_to_romaji") {
-    return kanaObject(String(numbers.kana_to_digits[kana]), numbers.kana_to_romaji[kana]);
-  }
-  console.log("Error: getKanaObjectForKana has no valid options enabled!");
-  return kanaObject(String(kana), "no-kana-found");
+const buildCompoundStream = (range: CompoundRange): QuestionStream => {
+  let currentQuestion = generateCompoundQuestion(range);
+  return {
+    current: () => currentQuestion,
+    next: () => {
+      currentQuestion = generateCompoundQuestion(range);
+      return currentQuestion;
+    },
+  };
+};
+
+const buildStream = (options: NumberPracticeConfiguration): QuestionStream => {
+  if (options.phase === "basic") return buildBasicStream(options.basicMode);
+  return buildCompoundStream(options.compoundRange);
+};
+
+const defaultOptions: NumberPracticeConfiguration = {
+  phase: "basic",
+  basicMode: "kanji_to_romaji",
+  compoundRange: 99,
 };
 
 function NumberPractice() {
@@ -36,12 +60,12 @@ function NumberPractice() {
 
   const [stats, setStats] = useState({ correctCount: 0, totalCount: 0 });
 
-  const [options, setOptions] = useState<NumberPracticeConfiguration>({ practice_type: "kana_to_romaji" });
+  const [options, setOptions] = useState<NumberPracticeConfiguration>(defaultOptions);
 
-  const streamRef = useRef(buildShuffledStream());
+  const streamRef = useRef(buildStream(options));
 
-  const [currentKana, setCurrentKana] = useState(getKanaObjectForKana(streamRef.current.current(), options));
-  const [previousKana, setPreviousKana] = useState<typeof currentKana | null>(null);
+  const [currentQuestion, setCurrentQuestion] = useState(streamRef.current.current());
+  const [previousQuestion, setPreviousQuestion] = useState<typeof currentQuestion | null>(null);
 
   const onAnswer = (correct: boolean) => {
     setStats((prev) => ({
@@ -51,25 +75,32 @@ function NumberPractice() {
 
     streamRef.current.next();
 
-    setPreviousKana(currentKana);
-    setCurrentKana(getKanaObjectForKana(streamRef.current.current(), options));
+    setPreviousQuestion(currentQuestion);
+    setCurrentQuestion(streamRef.current.current());
   };
 
   const handleOptionsChange = (newOptions: NumberPracticeConfiguration) => {
     setOptions(newOptions);
 
-    streamRef.current = buildShuffledStream();
+    streamRef.current = buildStream(newOptions);
 
-    setCurrentKana(getKanaObjectForKana(streamRef.current.current(), newOptions));
+    setCurrentQuestion(streamRef.current.current());
   };
 
   return (
     <Container px={0}>
-      <PracticeKanaInput mode="number" kana={currentKana} onAnswer={onAnswer} showCorrectAnswer={false} />
+      <PracticeKanaInput
+        mode="number"
+        kana={currentQuestion}
+        onAnswer={onAnswer}
+        showCorrectAnswer={false}
+        placeholder={options.phase === "compound" ? "number" : "romaji"}
+        fontSize={options.phase === "compound" ? "2rem" : undefined}
+      />
 
-      {previousKana && (
+      {previousQuestion && (
         <Text c="dimmed" fz="xs" mt="2.5rem">
-          previous: {previousKana.kana} = {previousKana.romaji}
+          previous: {previousQuestion.kana} = {stringifyRomaji(previousQuestion.romaji)}
         </Text>
       )}
 
