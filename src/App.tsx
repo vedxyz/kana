@@ -6,6 +6,9 @@ import PracticeKanaInput from "./components/PracticeKanaInput";
 import ExplanationCard from "./components/ExplanationCard";
 
 document.onkeydown = (event) => {
+  // Refocusing mid-composition risks discarding what the IME is holding
+  if (event.isComposing) return;
+
   if (event.key.length > 1 && ["Backspace", "Enter"].every((allowedKey) => event.code !== allowedKey)) return;
 
   // Not ideal
