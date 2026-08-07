@@ -92,6 +92,24 @@ export function getDefaultRomaji(romaji: KanaRomaji): string {
   return Array.isArray(romaji) ? romaji[0] : romaji;
 }
 
+const hiraganaStart = "ぁ".charCodeAt(0);
+const hiraganaEnd = "ゖ".charCodeAt(0);
+const katakanaOffset = "ァ".charCodeAt(0) - hiraganaStart;
+
+/**
+ * Rewrites every kana in the given text in the other script, leaving anything without a
+ * counterpart untouched — kanji, digits, and marks shared by both scripts such as ー.
+ */
+export function swapKanaScript(text: string): string {
+  return Array.from(text, (char) => {
+    const code = char.charCodeAt(0);
+    if (code >= hiraganaStart && code <= hiraganaEnd) return String.fromCharCode(code + katakanaOffset);
+    if (code >= hiraganaStart + katakanaOffset && code <= hiraganaEnd + katakanaOffset)
+      return String.fromCharCode(code - katakanaOffset);
+    return char;
+  }).join("");
+}
+
 export function stringifyRomaji(romaji: KanaRomaji): string {
   return Array.isArray(romaji) ? romaji.join(" / ") : romaji;
 }

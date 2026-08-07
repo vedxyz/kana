@@ -3,7 +3,7 @@ import { useDisclosure } from "@mantine/hooks";
 import React, { useRef, useState } from "react";
 import { shuffledStream, stringifyRomaji } from "../utilities/kana";
 import { tooltipProps } from "../utilities/tooltip";
-import { basicDigits, getBasicDigitQuestion, generateCompoundQuestion } from "../utilities/numbers";
+import { basicDigits, getBasicDigitQuestion, generateCompoundQuestion, NumberQuestion } from "../utilities/numbers";
 import KanaAnswerTooltipHint from "./KanaAnswerTooltipHint";
 import PracticeKanaInput from "./PracticeKanaInput";
 import PracticeOptions from "./PracticeOptions";
@@ -18,8 +18,8 @@ export interface NumberPracticeConfiguration {
 }
 
 interface QuestionStream {
-  current: () => { kana: string; romaji: string | string[] };
-  next: () => { kana: string; romaji: string | string[] };
+  current: () => NumberQuestion;
+  next: () => NumberQuestion;
 }
 
 const buildBasicStream = (mode: NumberPracticeConfiguration["basicMode"]): QuestionStream => {
