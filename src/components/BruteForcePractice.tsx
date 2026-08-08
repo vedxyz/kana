@@ -63,12 +63,18 @@ interface BruteForcePracticeStats {
 
 export interface BruteForcePracticeProps {
   kanaType: KanaNames;
+  initialProgress?: { stageName: string; learning: boolean } | null;
 }
 
-function BruteForcePractice({ kanaType }: BruteForcePracticeProps) {
+function BruteForcePractice({ kanaType, initialProgress }: BruteForcePracticeProps) {
   const [openedOptions, { toggle: toggleOptions }] = useDisclosure(true);
 
-  const [stage, setStage] = useState({ stage: bruteForce.stages[0], learning: true });
+  const resolvedInitialStage = initialProgress ? bruteForce.getStageByName(initialProgress.stageName) : undefined;
+
+  const [stage, setStage] = useState({
+    stage: resolvedInitialStage ?? bruteForce.stages[0],
+    learning: initialProgress && resolvedInitialStage ? initialProgress.learning : true,
+  });
   const [stageSatisfied, setStageSatisfied] = useState(false);
   const nextStage = bruteForce.getNextStage(stage.stage);
   const kanaOfStage = bruteForce.buildKanaOfStage(kanaType, stage.stage, stage.learning);
@@ -76,10 +82,26 @@ function BruteForcePractice({ kanaType }: BruteForcePracticeProps) {
   const [stats, setStats] = useState<BruteForcePracticeStats>({
     correctCount: 0,
     totalCount: 0,
-    remainingLimits: buildRemainingKanaLimits(kanaOfStage, statThresholds.learning.perKanaLimit),
+    remainingLimits: buildRemainingKanaLimits(
+      kanaOfStage,
+      statThresholds[stage.learning ? "learning" : "reviewing"].perKanaLimit,
+    ),
     rollingWindow: [],
     rollingWindowInEffect: false,
   });
+
+  const saveProgress = (s: typeof stage) => {
+    bruteForce.saveProgress(kanaType, {
+      stageName: s.stage.name,
+      learning: s.learning,
+    });
+  };
+
+  const hasInitiallySaved = useRef(false);
+  if (!hasInitiallySaved.current) {
+    hasInitiallySaved.current = true;
+    saveProgress(stage);
+  }
   const effectiveStatThresholds = statThresholds[stage.learning ? "learning" : "reviewing"];
   const statCounts = {
     ...countStatGoals(stats),
@@ -92,7 +114,9 @@ function BruteForcePractice({ kanaType }: BruteForcePracticeProps) {
 
   const [currentKana, setCurrentKana] = useState(streamRef.current.current());
 
-  const [firstEncounterKana, setFirstEncounterKana] = useState<KanaChars[]>(kanaOfStage.map((k) => k.kana));
+  const [firstEncounterKana, setFirstEncounterKana] = useState<KanaChars[]>(
+    stage.learning ? kanaOfStage.map((k) => k.kana) : [],
+  );
   const firstEncounter = firstEncounterKana.includes(currentKana.kana);
 
   const computeNewStats = (correct: boolean): BruteForcePracticeStats => {
@@ -130,6 +154,9 @@ function BruteForcePractice({ kanaType }: BruteForcePracticeProps) {
       counts.rollingCorrectCount >= effectiveStatThresholds.rollingWindowCorrectLimit
     ) {
       setStageSatisfied(true);
+      if (bruteForce.isFinalStage(stage.stage) && !stage.learning) {
+        bruteForce.clearProgress(kanaType);
+      }
     }
 
     if (stage.learning && firstEncounter) {
@@ -166,16 +193,19 @@ function BruteForcePractice({ kanaType }: BruteForcePracticeProps) {
 
     setFirstEncounterKana(newStage.learning ? newKanaOfStage.map((k) => k.kana) : []);
 
-    setStats((prev) => ({
-      correctCount: prev.correctCount,
-      totalCount: prev.totalCount,
-      remainingLimits: buildRemainingKanaLimits(
-        newKanaOfStage,
-        statThresholds[newStage.learning ? "learning" : "reviewing"].perKanaLimit,
-      ),
-      rollingWindow: [],
-      rollingWindowInEffect: false,
-    }));
+    setStats((prev) => {
+      saveProgress(newStage);
+      return {
+        correctCount: prev.correctCount,
+        totalCount: prev.totalCount,
+        remainingLimits: buildRemainingKanaLimits(
+          newKanaOfStage,
+          statThresholds[newStage.learning ? "learning" : "reviewing"].perKanaLimit,
+        ),
+        rollingWindow: [],
+        rollingWindowInEffect: false,
+      };
+    });
   };
 
   const handleMiscOptionsChange = (newOptions: typeof miscOptions) => {

@@ -130,12 +130,56 @@ const getKanaConfigurationForStage = (
   return config;
 };
 
+const getStageByName = (name: string): BruteForcePracticeStage | undefined =>
+  bruteForcePracticeStages.find((s) => s.name === name);
+
+export interface BruteForceProgress {
+  stageName: string;
+  learning: boolean;
+}
+
+const progressStorageKey = (kanaType: KanaNames) => `bruteforce-progress-${kanaType}`;
+
+const saveProgress = (kanaType: KanaNames, progress: BruteForceProgress): void => {
+  try {
+    localStorage.setItem(progressStorageKey(kanaType), JSON.stringify(progress));
+  } catch {
+    // Silently ignore storage errors (e.g. quota exceeded, private browsing)
+  }
+};
+
+const loadProgress = (kanaType: KanaNames): BruteForceProgress | null => {
+  try {
+    const raw = localStorage.getItem(progressStorageKey(kanaType));
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (typeof parsed.stageName === "string" && typeof parsed.learning === "boolean") {
+      return parsed as BruteForceProgress;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+};
+
+const clearProgress = (kanaType: KanaNames): void => {
+  try {
+    localStorage.removeItem(progressStorageKey(kanaType));
+  } catch {
+    // Silently ignore
+  }
+};
+
 export const bruteForce = {
   stages: bruteForcePracticeStages,
   getNextStage,
   isFinalStage,
+  getStageByName,
   getKanaOfStage,
   getAllKanaForStage,
   buildKanaOfStage,
   getKanaConfigurationForStage,
+  saveProgress,
+  loadProgress,
+  clearProgress,
 };

@@ -1,7 +1,15 @@
-import { Button, ButtonProps, Container, Group, List, Text, Title } from "@mantine/core";
+import { ActionIcon, Button, ButtonProps, Container, Group, List, Text, Title, Tooltip } from "@mantine/core";
+import { IconTrash } from "@tabler/icons-react";
 import React, { useState } from "react";
+import { bruteForce, BruteForceProgress } from "../utilities/bruteforce";
 import { KanaNames } from "../utilities/kana";
+import { tooltipProps } from "../utilities/tooltip";
 import BruteForcePractice from "./BruteForcePractice";
+
+function formatProgress(progress: BruteForceProgress): string {
+  const phase = progress.learning ? "Learning" : "Reviewing";
+  return `${phase} ${progress.stageName}`;
+}
 
 function BruteForceMenu() {
   const buttonProps: ButtonProps = {
@@ -14,8 +22,21 @@ function BruteForceMenu() {
   };
 
   const [kanaType, setKanaType] = useState<KanaNames | null>(null);
+  const [savedProgress, setSavedProgress] = useState<{
+    hiragana: BruteForceProgress | null;
+    katakana: BruteForceProgress | null;
+  }>({
+    hiragana: bruteForce.loadProgress("hiragana"),
+    katakana: bruteForce.loadProgress("katakana"),
+  });
 
-  if (kanaType) return <BruteForcePractice kanaType={kanaType} />;
+  if (kanaType) return <BruteForcePractice kanaType={kanaType} initialProgress={savedProgress[kanaType]} />;
+
+  const handleClearProgress = (type: KanaNames, e: React.MouseEvent) => {
+    e.stopPropagation();
+    bruteForce.clearProgress(type);
+    setSavedProgress((prev) => ({ ...prev, [type]: null }));
+  };
 
   return (
     <Container px={0}>
@@ -51,10 +72,34 @@ function BruteForceMenu() {
         <Button {...buttonProps} onClick={() => setKanaType("hiragana")}>
           <Title order={3}>Hiragana</Title>
           <Text weight="normal">ひらがな</Text>
+          {savedProgress.hiragana && (
+            <Group spacing={4} mt={4} position="center" noWrap>
+              <Text weight="normal" fz="xs" c="dimmed">
+                Resume: {formatProgress(savedProgress.hiragana)}
+              </Text>
+              <Tooltip {...tooltipProps} label="Clear saved progress">
+                <ActionIcon size="xs" variant="subtle" onClick={(e) => handleClearProgress("hiragana", e)}>
+                  <IconTrash size={12} />
+                </ActionIcon>
+              </Tooltip>
+            </Group>
+          )}
         </Button>
         <Button {...buttonProps} onClick={() => setKanaType("katakana")}>
           <Title order={3}>Katakana</Title>
           <Text weight="normal">カタカナ</Text>
+          {savedProgress.katakana && (
+            <Group spacing={4} mt={4} position="center" noWrap>
+              <Text weight="normal" fz="xs" c="dimmed">
+                Resume: {formatProgress(savedProgress.katakana)}
+              </Text>
+              <Tooltip {...tooltipProps} label="Clear saved progress">
+                <ActionIcon size="xs" variant="subtle" onClick={(e) => handleClearProgress("katakana", e)}>
+                  <IconTrash size={12} />
+                </ActionIcon>
+              </Tooltip>
+            </Group>
+          )}
         </Button>
       </Group>
     </Container>

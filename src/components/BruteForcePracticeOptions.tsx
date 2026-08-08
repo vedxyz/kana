@@ -1,4 +1,5 @@
-import { Checkbox, Container, Title } from "@mantine/core";
+import { Button, Checkbox, Container, Title } from "@mantine/core";
+import { IconTrash } from "@tabler/icons-react";
 import React from "react";
 import { bruteForce, BruteForcePracticeStage } from "../utilities/bruteforce";
 import { KanaNames } from "../utilities/kana";
@@ -36,6 +37,16 @@ function BruteForcePracticeOptions({
             });
           }}
         />
+        <Button
+          variant="subtle"
+          compact
+          color="red"
+          mt="sm"
+          leftIcon={<IconTrash size={14} />}
+          onClick={() => bruteForce.clearProgress(kanaType)}
+        >
+          Clear saved progress
+        </Button>
       </Container>
 
       <Title order={6} mb="sm">
