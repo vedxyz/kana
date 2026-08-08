@@ -13,7 +13,7 @@ function BruteForceMenu() {
     },
   };
 
-  const [kanaType, setKanaType] = useState<KanaNames | null>(null);
+  const [kanaType, setKanaType] = useState<KanaNames[] | null>(null);
 
   if (kanaType) return <BruteForcePractice kanaType={kanaType} />;
 
@@ -48,13 +48,19 @@ function BruteForceMenu() {
       </Text>
 
       <Group mt="sm">
-        <Button {...buttonProps} onClick={() => setKanaType("hiragana")}>
+        <Button {...buttonProps} onClick={() => setKanaType(["hiragana"])}>
           <Title order={3}>Hiragana</Title>
           <Text weight="normal">ひらがな</Text>
         </Button>
-        <Button {...buttonProps} onClick={() => setKanaType("katakana")}>
+        <Button {...buttonProps} onClick={() => setKanaType(["katakana"])}>
           <Title order={3}>Katakana</Title>
           <Text weight="normal">カタカナ</Text>
+        </Button>
+      </Group>
+      <Group mt="sm">
+        <Button {...buttonProps} onClick={() => setKanaType(["hiragana", "katakana"])}>
+          <Title order={3}>Both</Title>
+          <Text weight="normal">ひらがなとカタカナ</Text>
         </Button>
       </Group>
     </Container>

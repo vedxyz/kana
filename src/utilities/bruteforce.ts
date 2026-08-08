@@ -87,11 +87,19 @@ const getNextStage = (stage: BruteForcePracticeStage) =>
 const isFinalStage = (stage: BruteForcePracticeStage) =>
   bruteForcePracticeStages.findIndex((s) => s.name === stage.name) === bruteForcePracticeStages.length - 1;
 
-const getKanaOfStage = (kanaType: KanaNames, stage: BruteForcePracticeStage): KanaLetter[] => {
-  return stage.kana.reduce<KanaLetter[]>((acc, key) => acc.concat(kanaMapToArray(kana[kanaType][key])), []);
+const getKanaOfStage = (kanaType: KanaNames[], stage: BruteForcePracticeStage): KanaLetter[] => {
+  return stage.kana.reduce<KanaLetter[]>(
+    (acc, key) =>
+      acc.concat(
+        kanaType.flatMap((type) => {
+          return kanaMapToArray(kana[type][key]);
+        }),
+      ),
+    [],
+  );
 };
 
-const getAllKanaForStage = (kanaType: KanaNames, stage: BruteForcePracticeStage): KanaLetter[] => {
+const getAllKanaForStage = (kanaType: KanaNames[], stage: BruteForcePracticeStage): KanaLetter[] => {
   const stageIndex = bruteForcePracticeStages.findIndex((s) => s.name === stage.name);
   if (stageIndex === -1) throw Error("Invalid state");
 
@@ -104,11 +112,11 @@ const getAllKanaForStage = (kanaType: KanaNames, stage: BruteForcePracticeStage)
   return allKana;
 };
 
-const buildKanaOfStage = (kanaType: KanaNames, stage: BruteForcePracticeStage, learning: boolean) =>
+const buildKanaOfStage = (kanaType: KanaNames[], stage: BruteForcePracticeStage, learning: boolean) =>
   learning ? bruteForce.getKanaOfStage(kanaType, stage) : bruteForce.getAllKanaForStage(kanaType, stage);
 
 const getKanaConfigurationForStage = (
-  kanaType: KanaNames,
+  kanaType: KanaNames[],
   stage: BruteForcePracticeStage,
   includePrevious: boolean,
 ): KanaConfiguration => {
@@ -125,7 +133,11 @@ const getKanaConfigurationForStage = (
     }
   }
 
-  keys.forEach((key) => (config[kanaType][key] = true));
+  keys.forEach((key) =>
+    kanaType.flatMap((type) => {
+      config[type][key] = true;
+    }),
+  );
 
   return config;
 };

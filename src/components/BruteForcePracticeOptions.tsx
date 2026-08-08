@@ -6,7 +6,7 @@ import BruteForcePracticeStageOption from "./BruteForcePracticeStageOption";
 import { MiscPracticeOptions } from "./PracticeCard";
 
 export interface BruteForcePracticeOptionsProps {
-  kanaType: KanaNames;
+  kanaType: KanaNames[];
   current: BruteForcePracticeStage;
   onStageChange: (newStage: BruteForcePracticeStage) => void;
   miscOptions: MiscPracticeOptions;
