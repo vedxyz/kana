@@ -1,9 +1,18 @@
-import { Checkbox, Container, Group, Text } from "@mantine/core";
+import { Anchor, Checkbox, Container, Group, Text } from "@mantine/core";
 import React from "react";
-import { KanaChars, KanaConfiguration, kanaMap, KanaNames, KanaRowNames } from "../utilities/kana";
+import {
+  AnyKanaRowNames,
+  ExtendedKanaRowNames,
+  Kana,
+  KanaChars,
+  KanaConfiguration,
+  kanaMap,
+  KanaNames,
+  KanaRowNames,
+} from "../utilities/kana";
 import KanaBoardRow from "./KanaBoardRow";
 
-const kanaRows: { [key in KanaNames]: { [key in KanaRowNames]: (KanaChars | null)[] } } = {
+const kanaRows: { [key in KanaNames]: { [row in keyof Kana[key]]: (KanaChars | null)[] } } = {
   hiragana: {
     regular_vowel: ["あ", "い", "う", "え", "お"],
     regular_k: ["か", "き", "く", "け", "こ"],
@@ -67,6 +76,21 @@ const kanaRows: { [key in KanaNames]: { [key in KanaRowNames]: (KanaChars | null
     combination_j2: ["ヂャ", "ヂュ", "ヂョ"],
     combination_b: ["ビャ", "ビュ", "ビョ"],
     combination_p: ["ピャ", "ピュ", "ピョ"],
+
+    extended_v: ["ヴァ", "ヴィ", "ヴ", "ヴェ", "ヴォ"],
+    extended_f: ["ファ", "フィ", null, "フェ", "フォ"],
+    extended_ts: ["ツァ", "ツィ", null, "ツェ", "ツォ"],
+    extended_kw: ["クァ", "クィ", null, "クェ", "クォ"],
+    extended_gw: ["グァ", null, null, null, null],
+    extended_w: [null, "ウィ", null, "ウェ", "ウォ"],
+    extended_t: [null, "ティ", "トゥ", null, null],
+    extended_d: [null, "ディ", "ドゥ", null, null],
+    extended_s: [null, "スィ", null, "シェ", null],
+    extended_z: [null, "ズィ", null, "ジェ", null],
+    extended_c: [null, null, null, "チェ", null],
+    extended_y: [null, null, null, "イェ", null],
+    extended_yu: ["テュ", "デュ", "フュ", "ヴュ", null],
+    extended_ye: ["キェ", "ギェ", "ニェ", "ヒェ", "ミェ"],
   },
 };
 
@@ -104,8 +128,28 @@ const combinationRowNames: KanaRowNames[] = [
   "combination_p",
 ];
 
-const makeRowContent = (kanaType: KanaNames, kanaRowName: KanaRowNames) => {
-  return kanaRows[kanaType][kanaRowName].map((kanaChar) =>
+const extendedRowNames: ExtendedKanaRowNames[] = [
+  "extended_v",
+  "extended_f",
+  "extended_ts",
+  "extended_kw",
+  "extended_gw",
+  "extended_w",
+  "extended_t",
+  "extended_d",
+  "extended_s",
+  "extended_z",
+  "extended_c",
+  "extended_y",
+  "extended_yu",
+  "extended_ye",
+];
+
+const makeRowContent = (kanaType: KanaNames, kanaRowName: AnyKanaRowNames) => {
+  // Extended rows belong to katakana alone, so the lookup is partial for hiragana
+  const row = (kanaRows[kanaType] as Partial<Record<AnyKanaRowNames, (KanaChars | null)[]>>)[kanaRowName] ?? [];
+
+  return row.map((kanaChar) =>
     kanaChar
       ? {
           kana: kanaChar,
@@ -125,6 +169,7 @@ const getCheckStates = (options: KanaBoardProps["options"]) => {
     regular: getBooleansForOptionKey("regular_"),
     dakuten: getBooleansForOptionKey("dakuten_"),
     combination: getBooleansForOptionKey("combination_"),
+    extended: getBooleansForOptionKey("extended_"),
   };
 
   const getChecksObject = (category: keyof typeof entries) => ({
@@ -136,6 +181,7 @@ const getCheckStates = (options: KanaBoardProps["options"]) => {
     regular: getChecksObject("regular"),
     dakuten: getChecksObject("dakuten"),
     combination: getChecksObject("combination"),
+    extended: getChecksObject("extended"),
   };
 
   return checks;
@@ -144,19 +190,21 @@ const getCheckStates = (options: KanaBoardProps["options"]) => {
 export interface KanaBoardProps {
   kanaType: KanaNames;
   combinations?: boolean;
+  extended?: boolean;
   options: KanaConfiguration[keyof KanaConfiguration];
   onChange: (options: KanaConfiguration[keyof KanaConfiguration]) => void;
 }
 
-function KanaBoard({ kanaType, combinations = false, onChange, options }: KanaBoardProps) {
-  const rowNames = combinations ? combinationRowNames : mainRowNames;
+function KanaBoard({ kanaType, combinations = false, extended = false, onChange, options }: KanaBoardProps) {
+  const rowNames: AnyKanaRowNames[] = extended ? extendedRowNames : combinations ? combinationRowNames : mainRowNames;
 
   const checks = getCheckStates(options);
-  const allHasChecked = combinations
-    ? checks.combination.hasChecked
+  const singleGroup = extended ? "extended" : combinations ? "combination" : null;
+  const allHasChecked = singleGroup
+    ? checks[singleGroup].hasChecked
     : checks.regular.hasChecked || checks.dakuten.hasChecked;
-  const allHasUnchecked = combinations
-    ? checks.combination.hasUnchecked
+  const allHasUnchecked = singleGroup
+    ? checks[singleGroup].hasUnchecked
     : checks.regular.hasUnchecked || checks.dakuten.hasUnchecked;
 
   const handleCheckboxGroupToggle = (category: "regular" | "dakuten" | "all") => {
@@ -174,6 +222,7 @@ function KanaBoard({ kanaType, combinations = false, onChange, options }: KanaBo
       <Group position="apart" mb="xs" mt="md">
         <Text weight="bold" size="1rem">
           {kanaType[0].toUpperCase() + kanaType.slice(1)} {combinations && "Combinations"}
+          {extended && "Extended"}
         </Text>
         <Group>
           <Checkbox
@@ -182,7 +231,7 @@ function KanaBoard({ kanaType, combinations = false, onChange, options }: KanaBo
             checked={!allHasUnchecked}
             onChange={() => handleCheckboxGroupToggle("all")}
           />
-          {!combinations && (
+          {!combinations && !extended && (
             <>
               <Checkbox
                 label="Regular"
@@ -201,12 +250,22 @@ function KanaBoard({ kanaType, combinations = false, onChange, options }: KanaBo
         </Group>
       </Group>
 
-      <Group p="xs" bg="dark.8" sx={combinations ? { gap: "0.4rem" } : undefined}>
+      {extended && (
+        <Text c="dimmed" fz="sm" mb="xs">
+          Written only for foreign loanwords, so these sit outside the standard syllabary — worth leaving off until the
+          rest is comfortable.{" "}
+          <Anchor href="https://en.wikipedia.org/wiki/Katakana#Extended_katakana" target="_blank" rel="noreferrer">
+            Extended katakana (Wikipedia)
+          </Anchor>
+        </Text>
+      )}
+
+      <Group p="xs" bg="dark.8" sx={combinations || extended ? { gap: "0.4rem" } : undefined}>
         {rowNames.map((rowName) => (
           <KanaBoardRow
             key={rowName}
             content={makeRowContent(kanaType, rowName)}
-            checked={options[rowName]}
+            checked={(options as Partial<Record<AnyKanaRowNames, boolean>>)[rowName] ?? false}
             onChange={(checked) =>
               onChange({
                 ...options,

@@ -62,6 +62,21 @@ export const kana = Object.freeze({
     combination_j2: { ヂャ: "ja", ヂュ: "ju", ヂョ: "jo" },
     combination_b: { ビャ: "bya", ビュ: "byu", ビョ: "byo" },
     combination_p: { ピャ: "pya", ピュ: "pyu", ピョ: "pyo" },
+
+    extended_v: { ヴァ: "va", ヴィ: "vi", ヴ: "vu", ヴェ: "ve", ヴォ: "vo" },
+    extended_f: { ファ: "fa", フィ: "fi", フェ: "fe", フォ: "fo" },
+    extended_ts: { ツァ: "tsa", ツィ: "tsi", ツェ: "tse", ツォ: "tso" },
+    extended_kw: { クァ: "kwa", クィ: "kwi", クェ: "kwe", クォ: "kwo" },
+    extended_gw: { グァ: "gwa" },
+    extended_w: { ウィ: "wi", ウェ: "we", ウォ: "wo" },
+    extended_t: { ティ: "ti", トゥ: "tu" },
+    extended_d: { ディ: "di", ドゥ: "du" },
+    extended_s: { スィ: "si", シェ: "she" },
+    extended_z: { ズィ: "zi", ジェ: "je" },
+    extended_c: { チェ: "che" },
+    extended_y: { イェ: "ye" },
+    extended_yu: { テュ: "tyu", デュ: "dyu", フュ: "fyu", ヴュ: "vyu" },
+    extended_ye: { キェ: "kye", ギェ: "gye", ニェ: "nye", ヒェ: "hye", ミェ: "mye" },
   },
 });
 
@@ -71,7 +86,7 @@ export type Kana = typeof kana;
 export type KanaNames = keyof Kana;
 export type KanaRowsObject = Kana[KanaNames];
 export type KanaRowNames = keyof KanaRowsObject;
-export type KanaRows = KanaRowsObject[KanaRowNames];
+export type KanaRows = UnionValues<KanaRowsObject>;
 
 type UnionKeys<T> = T extends T ? keyof T : never;
 type UnionValues<T> = T extends T ? T[keyof T] : never;
@@ -80,9 +95,12 @@ export type KanaRomaji = UnionValues<KanaRows>;
 
 export type KanaConfiguration = {
   [key in KanaNames]: {
-    [key in KanaRowNames]: boolean;
+    [row in keyof Kana[key]]: boolean;
   };
 };
+
+export type ExtendedKanaRowNames = Exclude<keyof Kana["katakana"], KanaRowNames>;
+export type AnyKanaRowNames = KanaRowNames | ExtendedKanaRowNames;
 
 export type KanaRomajiMap = { [key: string]: KanaRomaji }; // key: KanaChars
 
@@ -148,9 +166,26 @@ export function getBaseKanaConfiguration(nonempty = false): KanaConfiguration {
     combination_p: false,
   });
 
+  const getExtendedKanaRowBooleans = () => ({
+    extended_v: false,
+    extended_f: false,
+    extended_ts: false,
+    extended_kw: false,
+    extended_gw: false,
+    extended_w: false,
+    extended_t: false,
+    extended_d: false,
+    extended_s: false,
+    extended_z: false,
+    extended_c: false,
+    extended_y: false,
+    extended_yu: false,
+    extended_ye: false,
+  });
+
   const config = {
     hiragana: getKanaRowBooleans(),
-    katakana: getKanaRowBooleans(),
+    katakana: { ...getKanaRowBooleans(), ...getExtendedKanaRowBooleans() },
   };
   config.hiragana.regular_vowel = nonempty;
 
@@ -166,7 +201,7 @@ export function kanaConfigurationToMap(configuration: KanaConfiguration): KanaRo
 
   Object.entries(configuration).forEach(([kanaName, kanaConfig]) => {
     Object.entries(kanaConfig).forEach(([rowName, rowEnabled]) => {
-      const kanaRows = kana[kanaName as KanaNames][rowName as KanaRowNames];
+      const kanaRows = (kana[kanaName as KanaNames] as Record<string, KanaRows>)[rowName];
       if (rowEnabled) enabledKanaRows.push(kanaRows);
     });
   });
