@@ -40,6 +40,7 @@ function FreePracticeOptions({ options, miscOptions, onChange, onMiscChange }: F
       <KanaBoard kanaType="hiragana" options={options.hiragana} onChange={makeChangeHandler("hiragana")} combinations />
       <KanaBoard kanaType="katakana" options={options.katakana} onChange={makeChangeHandler("katakana")} />
       <KanaBoard kanaType="katakana" options={options.katakana} onChange={makeChangeHandler("katakana")} combinations />
+      <KanaBoard kanaType="katakana" options={options.katakana} onChange={makeChangeHandler("katakana")} extended />
     </>
   );
 }
